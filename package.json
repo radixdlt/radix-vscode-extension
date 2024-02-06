@@ -3,19 +3,34 @@
   "displayName": "Radix Developer Tools",
   "description": "Radix Developer Tools for Visual Studio Code to help you build and deploy Radix applications using Scrypto and The Radix DLT Network.",
   "version": "0.0.1",
+  "publisher": "radixdlt",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/radixdlt/radix-vscode-extension"
+  },
   "engines": {
     "vscode": "^1.86.0"
   },
   "categories": [
+    "Snippets",
     "Other"
   ],
-  "activationEvents": [],
+  "icon": "/src/assets/scrypto-icon.png",
+  "activationEvents": [
+    "onLanguage:rust"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "radix-developer-tools.helloScrypto",
         "title": "Hello Scrypto"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "rust",
+        "path": "/src/snippets/scrypto-snippets.json"
       }
     ]
   },
