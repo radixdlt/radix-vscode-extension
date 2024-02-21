@@ -32,7 +32,28 @@
         "language": "rust",
         "path": "/src/snippets/scrypto-snippets.json"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "radix-developer-tools",
+          "title": "Radix Developer Tools",
+          "icon": "/src/assets/scrypto-24x24.svg"
+        }
+      ]
+    },
+    "views": {
+      "radix-developer-tools": [
+        {
+          "id": "create-new-project",
+          "name": "Create New Project"
+        },
+        {
+          "id": "resim-commands",
+          "name": "Resim Commands"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
