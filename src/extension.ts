@@ -48,15 +48,16 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Tree View Items
 	const templates = [
-		{ label: 'Scrypto Package', icon: '../resources/Scrypto.svg', command: 'scrypto.new-package' },
-		{ label: 'Create Radix dApp', icon: '../resources/Scrypto.svg', command: 'create-radix-dapp' },
+		{ label: 'Scrypto Package', icon: 'assets/scrypto-24x24.svg', command: 'scrypto.new-package' },
+		{ label: 'Create Radix dApp', icon: 'assets/scrypto-24x24.svg', command: 'create-radix-dapp' },
 	];
 	const resimCmd = [
-		{ label: 'Resim New Account', icon: '../resources/Scrypto.svg', command: 'resim.new-account' },
-		{ label: 'Resim Reset', icon: '../resources/Scrypto.svg', command: 'resim.reset' },
-		{ label: 'Resim Publish', icon: '../resources/Scrypto.svg', command: 'resim.publish' },
-		{ label: 'Resim Show Configs', icon: '../resources/Scrypto.svg', command: 'resim.show-configs' },
-		{ label: 'Resim Show Ledger', icon: '../resources/Scrypto.svg', command: 'resim.show-ledger' }
+		{ label: 'Resim New Account', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-account' },
+		{ label: 'Resim Reset', icon: 'assets/scrypto-24x24.svg', command: 'resim.reset' },
+		{ label: 'Resim Publish', icon: 'assets/scrypto-24x24.svg', command: 'resim.publish' },
+		{ label: 'Resim Show Configs', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-configs' },
+		{ label: 'Resim Show Ledger', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-ledger' },
+		{ label: 'Resim Transfer', icon: 'assets/scrypto-24x24.svg', command: 'resim.transfer' },
 		// Create a simple token command
 		// Create a fungible token with all behaviors unlocked command
 		// Create an NFT command
@@ -171,6 +172,40 @@ export function activate(context: vscode.ExtensionContext) {
 			terminal.sendText("resim show-ledger");
 			terminal.show();
 		}
+	}));
+
+	// Resim Transfer Command
+	// resim transfer [OPTIONS] <RESOURCE_ADDRESS>:<AMOUNT> <RECIPIENT>
+	context.subscriptions.push(vscode.commands.registerCommand('resim.transfer', async (label) => {
+
+		const resourceAddress = await vscode.window.showInputBox({ prompt: 'Enter the resource address' });
+		const amount = await vscode.window.showInputBox({ prompt: 'Enter the amount' });
+		const recipientAccount = await vscode.window.showInputBox({ prompt: 'Enter the recipient account' });
+
+		if (resourceAddress && amount && recipientAccount) {
+			const command = `resim transfer ${resourceAddress}:${amount} ${recipientAccount}`;
+
+			// check if there is a resim terminal open already
+			let isResimTerminalOpen = false;
+			vscode.window.terminals.forEach(terminal => {
+				if (terminal.name === 'Resim') {
+					// Use the command here
+					terminal.sendText(command);
+					terminal.show();
+					isResimTerminalOpen = true;
+					return;
+				}
+			});
+			if (!isResimTerminalOpen) {
+				const terminal = vscode.window.createTerminal(`Resim`);
+				terminal.sendText("resim transfer");
+				terminal.show();
+			}
+		} else {
+			vscode.window.showErrorMessage('You must provide a resource address, amount, and recipient account');
+		}
+
+
 	}));
 
 	// Resim Publish Package Command
