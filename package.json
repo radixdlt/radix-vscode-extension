@@ -27,10 +27,23 @@
         "title": "Hello Scrypto"
       }
     ],
+    "languages": [
+      {
+        "id": "radixTransactionManifest",
+        "extensions": [
+          ".rtm"
+        ],
+        "name": "Radix Transaction Manifest"
+      }
+    ],
     "snippets": [
       {
         "language": "rust",
         "path": "/src/snippets/scrypto-snippets.json"
+      },
+      {
+        "language": "radixTransactionManifest",
+        "path": "/src/snippets/rtm-snippets.json"
       }
     ],
     "viewsContainers": {
