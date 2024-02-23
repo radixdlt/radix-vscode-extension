@@ -52,18 +52,17 @@ export function activate(context: vscode.ExtensionContext) {
 		{ label: 'Create Radix dApp', icon: 'assets/scrypto-24x24.svg', command: 'create-radix-dapp' },
 	];
 	const resimCmd = [
-		{ label: 'Resim New Account', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-account' },
-		{ label: 'Resim Reset', icon: 'assets/scrypto-24x24.svg', command: 'resim.reset' },
-		{ label: 'Resim Publish', icon: 'assets/scrypto-24x24.svg', command: 'resim.publish' },
-		{ label: 'Resim Show Configs', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-configs' },
-		{ label: 'Resim Show Ledger', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-ledger' },
-		{ label: 'Resim Transfer', icon: 'assets/scrypto-24x24.svg', command: 'resim.transfer' },
+		{ label: 'New Account', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-account' },
+		{ label: 'Reset', icon: 'assets/scrypto-24x24.svg', command: 'resim.reset' },
+		{ label: 'Publish', icon: 'assets/scrypto-24x24.svg', command: 'resim.publish' },
+		{ label: 'Show Configs', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-configs' },
+		{ label: 'Show Ledger', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-ledger' },
+		{ label: 'Transfer', icon: 'assets/scrypto-24x24.svg', command: 'resim.transfer' },
 		// Create a simple token command
 		// Create a fungible token with all behaviors unlocked command
 		// Create an NFT command
 		// Call a function on a deployed blueprint package command
 		// Call a method on a component command
-		// Resim transfer command
 	];
 
 	// Tree View Data Providers
@@ -177,7 +176,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// Resim Transfer Command
 	// resim transfer [OPTIONS] <RESOURCE_ADDRESS>:<AMOUNT> <RECIPIENT>
 	context.subscriptions.push(vscode.commands.registerCommand('resim.transfer', async (label) => {
-
+		// TODO - Add validation to the input boxes to statically check for the correct input
 		const resourceAddress = await vscode.window.showInputBox({ prompt: 'Enter the resource address' });
 		const amount = await vscode.window.showInputBox({ prompt: 'Enter the amount' });
 		const recipientAccount = await vscode.window.showInputBox({ prompt: 'Enter the recipient account' });
@@ -204,8 +203,6 @@ export function activate(context: vscode.ExtensionContext) {
 		} else {
 			vscode.window.showErrorMessage('You must provide a resource address, amount, and recipient account');
 		}
-
-
 	}));
 
 	// Resim Publish Package Command
