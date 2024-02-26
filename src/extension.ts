@@ -58,12 +58,11 @@ export function activate(context: vscode.ExtensionContext) {
 		{ label: 'Show Configs', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-configs' },
 		{ label: 'Show Ledger', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-ledger' },
 		{ label: 'Transfer', icon: 'assets/scrypto-24x24.svg', command: 'resim.transfer' },
-		{ label: 'Create Fungible Token', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-token-fixed' }
-		// Call a function on a deployed blueprint package command
-		// Call a method on a component command
-		// Create a fungible token with all behaviors unlocked command
-		// Create an NFT command
-
+		{ label: 'Create Fungible Token', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-token-fixed' },
+		{ label: 'Call Function', icon: 'assets/scrypto-24x24.svg', command: 'resim.call-function' },
+		{ label: 'Call Method', icon: 'assets/scrypto-24x24.svg', command: 'resim.call-method' },
+		{ label: 'Create NFT Badge', icon: 'assets/scrypto-24x24.svg', command: 'resim.create-nft-badge' },
+		// { label: 'Create Fungible Token with Behaviors', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-token-behaviors' },
 	];
 
 	// Tree View Data Providers
@@ -210,21 +209,9 @@ export function activate(context: vscode.ExtensionContext) {
 	// TODO - add a check to see if the terminal location contains the scrypto-package
 	context.subscriptions.push(vscode.commands.registerCommand('resim.publish', (label) => {
 		// check if there is a resim terminal open already
-		let isResimTerminalOpen = false;
-		vscode.window.terminals.forEach(terminal => {
-			if (terminal.name === 'Resim') {
-				terminal.sendText("cd scrypto-package && resim publish .");
-				terminal.show();
-				isResimTerminalOpen = true;
-				return;
-			}
-		});
-		// if not create a new one
-		if (!isResimTerminalOpen) {
-			const terminal = vscode.window.createTerminal(`Resim`);
-			terminal.sendText("cd scrypto-package && resim publish .");
-			terminal.show();
-		}
+		const terminal = vscode.window.createTerminal(`Publish Package`);
+		terminal.sendText("cd scrypto-package && resim publish .");
+		terminal.show();
 	}));
 
 	// Resim New Simple Fungible Token Fixed Supply Command
@@ -255,6 +242,121 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showErrorMessage('You must provide an amount of tokens to create');
 		}
 	}));
+
+	// Resim Call Function Command
+	// resim call-function <package_address> <blueprint_name> <function> <args>
+	context.subscriptions.push(vscode.commands.registerCommand('resim.call-function', async (label) => {
+		// TODO - Add validation to the input boxes to statically check for the correct input
+		const packageAddress = await vscode.window.showInputBox({ prompt: 'Enter the package address' });
+		const blueprintName = await vscode.window.showInputBox({ prompt: 'Enter the blueprint name' });
+		const functionName = await vscode.window.showInputBox({ prompt: 'Enter the function name' });
+		// TODO add logic to handle multiple arguments more elegantly
+		const args = await vscode.window.showInputBox({ prompt: 'Enter the function arguments seperated by a blank space' });
+
+		if (packageAddress && blueprintName && functionName) {
+			const command = `resim call-function ${packageAddress} ${blueprintName} ${functionName} ${args}`;
+
+			// check if there is a resim terminal open already
+			let isResimTerminalOpen = false;
+			vscode.window.terminals.forEach(terminal => {
+				if (terminal.name === 'Resim') {
+					// Use the command here
+					terminal.sendText(command);
+					terminal.show();
+					isResimTerminalOpen = true;
+					return;
+				}
+			});
+			if (!isResimTerminalOpen) {
+				const terminal = vscode.window.createTerminal(`Resim`);
+				terminal.sendText(command);
+				terminal.show();
+			}
+		} else {
+			vscode.window.showErrorMessage('You must provide a resource address, amount, and recipient account');
+		}
+	}));
+
+	// Resim Call Method Command
+	// resim call-method <component_address> <method> <args>
+	context.subscriptions.push(vscode.commands.registerCommand('resim.call-method', async (label) => {
+		// TODO - Add validation to the input boxes to statically check for the correct input
+		const componentAddress = await vscode.window.showInputBox({ prompt: 'Enter the component address' });
+		const methodName = await vscode.window.showInputBox({ prompt: 'Enter the method name' });
+		// TODO add logic to handle multiple arguments more elegantly
+		const args = await vscode.window.showInputBox({ prompt: 'Enter the method arguments seperated by a blank space' });
+
+		if (componentAddress && methodName) {
+			const command = `resim call-method ${componentAddress} ${methodName} ${args}`;
+
+			// check if there is a resim terminal open already
+			let isResimTerminalOpen = false;
+			vscode.window.terminals.forEach(terminal => {
+				if (terminal.name === 'Resim') {
+					// Use the command here
+					terminal.sendText(command);
+					terminal.show();
+					isResimTerminalOpen = true;
+					return;
+				}
+			});
+			if (!isResimTerminalOpen) {
+				const terminal = vscode.window.createTerminal(`Resim`);
+				terminal.sendText(command);
+				terminal.show();
+			}
+		} else {
+			vscode.window.showErrorMessage('You must provide a resource address, amount, and recipient account');
+		}
+	}));
+
+	// Resim Create Simple NFT Badge Command
+	// resim new-simple-badge
+	context.subscriptions.push(vscode.commands.registerCommand('resim.create-nft-badge', async (label) => {
+		const command = `resim new-simple-badge`;
+
+		// check if there is a resim terminal open already
+		let isResimTerminalOpen = false;
+		vscode.window.terminals.forEach(terminal => {
+			if (terminal.name === 'Resim') {
+				// Use the command here
+				terminal.sendText(command);
+				terminal.show();
+				isResimTerminalOpen = true;
+				return;
+			}
+		});
+		if (!isResimTerminalOpen) {
+			const terminal = vscode.window.createTerminal(`Resim`);
+			terminal.sendText(command);
+			terminal.show();
+		}
+	}));
+
+	// Resim Create Fungible Token with Behaviors Command
+	// resim run create-fungible-token-with-behaviors.rtm
+	// TODO - Create custom manifest file for the behaviors
+	// context.subscriptions.push(vscode.commands.registerCommand('resim.new-token-behaviors', async (label) => {
+	// 	// Test with simple manifest first
+	// 	const command = `resim run create-fungible-token-with-behaviors.rtm`;
+
+	// 	// check if there is a resim terminal open already
+	// 	let isResimTerminalOpen = false;
+	// 	vscode.window.terminals.forEach(terminal => {
+	// 		if (terminal.name === 'Resim') {
+	// 			// Use the command here
+	// 			terminal.sendText(command);
+	// 			terminal.show();
+	// 			isResimTerminalOpen = true;
+	// 			return;
+	// 		}
+	// 	});
+	// 	if (!isResimTerminalOpen) {
+	// 		const terminal = vscode.window.createTerminal(`Resim`);
+	// 		terminal.sendText(command);
+	// 		terminal.show();
+	// 	}
+	// }));
 
 	// Add tree views to the extension context
 	context.subscriptions.push(disposable);
