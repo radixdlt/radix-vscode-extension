@@ -220,11 +220,6 @@
 		"prefix": "PackageAddress",
 		"body": "Address(\"${1:Package Address}\")"
 	},
-	"SystemAddress": {
-		"scope": "scope.rtm",
-		"prefix": "SystemAddress",
-		"body": "SystemAddress(\"${1:System Address}\")"
-	},
 	"Decimal": {
 		"scope": "scope.rtm",
 		"prefix": "Decimal",
@@ -293,9 +288,9 @@
 	// =================
 	// Useful Constants
 	// =================
-	"Radix Token": {
+	"XRD": {
 		"scope": "scope.rtm",
-		"prefix": "RADIX_TOKEN",
+		"prefix": "XRD",
 		"body": "resource_sim1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqu57yag"
 	},
 	"System Component": {
