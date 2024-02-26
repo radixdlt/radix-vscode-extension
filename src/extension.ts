@@ -58,11 +58,12 @@ export function activate(context: vscode.ExtensionContext) {
 		{ label: 'Show Configs', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-configs' },
 		{ label: 'Show Ledger', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-ledger' },
 		{ label: 'Transfer', icon: 'assets/scrypto-24x24.svg', command: 'resim.transfer' },
-		// Create a simple token command
-		// Create a fungible token with all behaviors unlocked command
-		// Create an NFT command
+		{ label: 'Create Fungible Token', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-token-fixed' }
 		// Call a function on a deployed blueprint package command
 		// Call a method on a component command
+		// Create a fungible token with all behaviors unlocked command
+		// Create an NFT command
+
 	];
 
 	// Tree View Data Providers
@@ -197,7 +198,7 @@ export function activate(context: vscode.ExtensionContext) {
 			});
 			if (!isResimTerminalOpen) {
 				const terminal = vscode.window.createTerminal(`Resim`);
-				terminal.sendText("resim transfer");
+				terminal.sendText(command);
 				terminal.show();
 			}
 		} else {
@@ -223,6 +224,35 @@ export function activate(context: vscode.ExtensionContext) {
 			const terminal = vscode.window.createTerminal(`Resim`);
 			terminal.sendText("cd scrypto-package && resim publish .");
 			terminal.show();
+		}
+	}));
+
+	// Resim New Simple Fungible Token Fixed Supply Command
+	context.subscriptions.push(vscode.commands.registerCommand('resim.new-token-fixed', async (label) => {
+		// TODO - Add validation to the input boxes to statically check for the correct input
+		const amount = await vscode.window.showInputBox({ prompt: 'Enter the amount' });
+
+		if (amount) {
+			const command = `resim new-token-fixed ${amount}`;
+
+			// check if there is a resim terminal open already
+			let isResimTerminalOpen = false;
+			vscode.window.terminals.forEach(terminal => {
+				if (terminal.name === 'Resim') {
+					// Use the command here
+					terminal.sendText(command);
+					terminal.show();
+					isResimTerminalOpen = true;
+					return;
+				}
+			});
+			if (!isResimTerminalOpen) {
+				const terminal = vscode.window.createTerminal(`Resim`);
+				terminal.sendText(command);
+				terminal.show();
+			}
+		} else {
+			vscode.window.showErrorMessage('You must provide an amount of tokens to create');
 		}
 	}));
 
