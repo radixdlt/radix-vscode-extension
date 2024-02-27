@@ -62,7 +62,7 @@ export function activate(context: vscode.ExtensionContext) {
 		{ label: 'Call Function', icon: 'assets/scrypto-24x24.svg', command: 'resim.call-function' },
 		{ label: 'Call Method', icon: 'assets/scrypto-24x24.svg', command: 'resim.call-method' },
 		{ label: 'Create NFT Badge', icon: 'assets/scrypto-24x24.svg', command: 'resim.create-nft-badge' },
-		// { label: 'Create Fungible Token with Behaviors', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-token-behaviors' },
+		{ label: 'Create Fungible Token with Behaviors', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-token-behaviors' },
 	];
 
 	// Tree View Data Providers
@@ -336,27 +336,27 @@ export function activate(context: vscode.ExtensionContext) {
 	// Resim Create Fungible Token with Behaviors Command
 	// resim run create-fungible-token-with-behaviors.rtm
 	// TODO - Create custom manifest file for the behaviors
-	// context.subscriptions.push(vscode.commands.registerCommand('resim.new-token-behaviors', async (label) => {
-	// 	// Test with simple manifest first
-	// 	const command = `resim run create-fungible-token-with-behaviors.rtm`;
+	context.subscriptions.push(vscode.commands.registerCommand('resim.new-token-behaviors', async (label) => {
+		// Test with simple manifest first
+		const command = `resim run ${__dirname}/assets/manifests/token_behaviors.rtm`;
 
-	// 	// check if there is a resim terminal open already
-	// 	let isResimTerminalOpen = false;
-	// 	vscode.window.terminals.forEach(terminal => {
-	// 		if (terminal.name === 'Resim') {
-	// 			// Use the command here
-	// 			terminal.sendText(command);
-	// 			terminal.show();
-	// 			isResimTerminalOpen = true;
-	// 			return;
-	// 		}
-	// 	});
-	// 	if (!isResimTerminalOpen) {
-	// 		const terminal = vscode.window.createTerminal(`Resim`);
-	// 		terminal.sendText(command);
-	// 		terminal.show();
-	// 	}
-	// }));
+		// check if there is a resim terminal open already
+		let isResimTerminalOpen = false;
+		vscode.window.terminals.forEach(terminal => {
+			if (terminal.name === 'Resim') {
+				// Use the command here
+				terminal.sendText(command);
+				terminal.show();
+				isResimTerminalOpen = true;
+				return;
+			}
+		});
+		if (!isResimTerminalOpen) {
+			const terminal = vscode.window.createTerminal(`Resim`);
+			terminal.sendText(command);
+			terminal.show();
+		}
+	}));
 
 	// Add tree views to the extension context
 	context.subscriptions.push(disposable);
