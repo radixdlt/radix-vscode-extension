@@ -53,24 +53,37 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}
 
-	const file_icon = new vscode.ThemeIcon('file');
+	// vscode.ThemeIcon - https://code.visualstudio.com/api/references/icons-in-labels
+	const account_icon = new vscode.ThemeIcon('account');
+	const reset_icon = new vscode.ThemeIcon('refresh');
+	const package_icon = new vscode.ThemeIcon('package');
+	const publish_icon = new vscode.ThemeIcon('repo-push');
+	const dapp_icon = new vscode.ThemeIcon('empty-window');
+	const configs_icon = new vscode.ThemeIcon('settings-gear');
+	const ledger_icon = new vscode.ThemeIcon('list-flat');
+	const transfer_icon = new vscode.ThemeIcon('symbol-boolean');
+	const fungible_token_icon = new vscode.ThemeIcon('symbol-constant');
+	const call_function_icon = new vscode.ThemeIcon('symbol-function');
+	const call_method_icon = new vscode.ThemeIcon('symbol-method');
+	const nft_badge_icon = new vscode.ThemeIcon('verified-filled');
+	const fungible_token_behaviors_icon = new vscode.ThemeIcon('symbol-misc');
 	// Tree View Items
 	const templates = [
-		{ label: 'Scrypto Package', icon: file_icon, command: 'scrypto.new-package' },
-		{ label: 'Create Radix dApp', icon: 'assets/scrypto-24x24.svg', command: 'create-radix-dapp' },
+		{ label: 'Scrypto Package', icon: package_icon, command: 'scrypto.new-package' },
+		{ label: 'Create Radix dApp', icon: dapp_icon, command: 'create-radix-dapp' },
 	];
 	const resimCmd = [
-		{ label: 'New Account', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-account' },
-		{ label: 'Reset', icon: 'assets/scrypto-24x24.svg', command: 'resim.reset' },
-		{ label: 'Publish', icon: 'assets/scrypto-24x24.svg', command: 'resim.publish' },
-		{ label: 'Show Configs', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-configs' },
-		{ label: 'Show Ledger', icon: 'assets/scrypto-24x24.svg', command: 'resim.show-ledger' },
-		{ label: 'Transfer', icon: 'assets/scrypto-24x24.svg', command: 'resim.transfer' },
-		{ label: 'Create Fungible Token', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-token-fixed' },
-		{ label: 'Call Function', icon: 'assets/scrypto-24x24.svg', command: 'resim.call-function' },
-		{ label: 'Call Method', icon: 'assets/scrypto-24x24.svg', command: 'resim.call-method' },
-		{ label: 'Create NFT Badge', icon: 'assets/scrypto-24x24.svg', command: 'resim.create-nft-badge' },
-		{ label: 'Create Fungible Token with Behaviors', icon: 'assets/scrypto-24x24.svg', command: 'resim.new-token-behaviors' },
+		{ label: 'New Account', icon: account_icon, command: 'resim.new-account' },
+		{ label: 'Reset', icon: reset_icon, command: 'resim.reset' },
+		{ label: 'Publish', icon: publish_icon, command: 'resim.publish' },
+		{ label: 'Show Configs', icon: configs_icon, command: 'resim.show-configs' },
+		{ label: 'Show Ledger', icon: ledger_icon, command: 'resim.show-ledger' },
+		{ label: 'Transfer', icon: transfer_icon, command: 'resim.transfer' },
+		{ label: 'Create Fungible Token', icon: fungible_token_icon, command: 'resim.new-token-fixed' },
+		{ label: 'Call Function', icon: call_function_icon, command: 'resim.call-function' },
+		{ label: 'Call Method', icon: call_method_icon, command: 'resim.call-method' },
+		{ label: 'Create NFT Badge', icon: nft_badge_icon, command: 'resim.create-nft-badge' },
+		{ label: 'Create Fungible w/Behaviors', icon: fungible_token_behaviors_icon, command: 'resim.new-token-behaviors' },
 	];
 
 	// Tree View Data Providers
