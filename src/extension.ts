@@ -13,18 +13,25 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	class ScryptoTreeDataProvider implements vscode.TreeDataProvider<string> {
-		private items: { label: string, icon: string, command: string }[];
+		private items: { label: string, icon: vscode.ThemeIcon | string, command: string }[];
 
-		constructor(items: { label: string, icon: string, command: string }[]) {
+		constructor(items: { label: string, icon: vscode.ThemeIcon | string, command: string }[]) {
 			this.items = items;
 		}
 
 		getTreeItem(element: string): vscode.TreeItem {
 			const item = this.items.find(item => item.label === element);
 			if (item) {
+				let iconPath: vscode.ThemeIcon | vscode.Uri;
+				if (typeof item.icon === 'string') {
+					iconPath = vscode.Uri.file(path.join(__dirname, item.icon));
+				} else {
+					iconPath = item.icon;
+				}
+
 				return {
 					label: item.label,
-					iconPath: vscode.Uri.file(path.join(__dirname, item.icon)),
+					iconPath: iconPath,
 					id: item.label,
 					collapsibleState: vscode.TreeItemCollapsibleState.None,
 					command: {
@@ -46,9 +53,10 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}
 
+	const file_icon = new vscode.ThemeIcon('file');
 	// Tree View Items
 	const templates = [
-		{ label: 'Scrypto Package', icon: 'assets/scrypto-24x24.svg', command: 'scrypto.new-package' },
+		{ label: 'Scrypto Package', icon: file_icon, command: 'scrypto.new-package' },
 		{ label: 'Create Radix dApp', icon: 'assets/scrypto-24x24.svg', command: 'create-radix-dapp' },
 	];
 	const resimCmd = [
