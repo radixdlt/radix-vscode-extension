@@ -33,7 +33,19 @@
         "extensions": [
           ".rtm"
         ],
-        "name": "Radix Transaction Manifest"
+        "name": "Radix Transaction Manifest",
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "/src/assets/scrypto-icon.png",
+          "dark": "/src/assets/scrypto-icon.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "radixTransactionManifest",
+        "scopeName": "source.rtm",
+        "path": "./syntaxes/rtm.tmLanguage.json"
       }
     ],
     "snippets": [
