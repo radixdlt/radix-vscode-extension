@@ -296,7 +296,7 @@ export function activate(context: vscode.ExtensionContext) {
 				terminal.show();
 			}
 		} else {
-			vscode.window.showErrorMessage('You must provide a resource address, amount, and recipient account');
+			vscode.window.showErrorMessage('You must provide a package address, blueprint name, function name and any required arguments');
 		}
 	}));
 
@@ -329,7 +329,7 @@ export function activate(context: vscode.ExtensionContext) {
 				terminal.show();
 			}
 		} else {
-			vscode.window.showErrorMessage('You must provide a resource address, amount, and recipient account');
+			vscode.window.showErrorMessage('You must provide a component address, method name, and any required arguments');
 		}
 	}));
 
