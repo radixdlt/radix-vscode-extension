@@ -98,14 +98,16 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('scrypto.new-package', async (label) => {
 		const packageName = await vscode.window.showInputBox({
 			prompt: 'Enter the package name',
-			placeHolder: 'scrypto-package'
-		});
+			placeHolder: 'scrypto-package',
+			value: '',
+			ignoreFocusOut: true,
+			valueSelection: [-1, -1]
+		}) || 'scrypto-package';
 
 		if (packageName) {
 			const terminal = vscode.window.createTerminal(`Scrypto-CLI`);
 			terminal.sendText(`scrypto new-package ${packageName}`);
 			terminal.show();
-			vscode.window.showInformationMessage(`Created ${label}`);
 		}
 	}));
 
@@ -198,9 +200,9 @@ export function activate(context: vscode.ExtensionContext) {
 	// resim transfer [OPTIONS] <RESOURCE_ADDRESS>:<AMOUNT> <RECIPIENT>
 	context.subscriptions.push(vscode.commands.registerCommand('resim.transfer', async (label) => {
 		// TODO - Add validation to the input boxes to statically check for the correct input
-		const resourceAddress = await vscode.window.showInputBox({ prompt: 'Enter the resource address' });
-		const amount = await vscode.window.showInputBox({ prompt: 'Enter the amount' });
-		const recipientAccount = await vscode.window.showInputBox({ prompt: 'Enter the recipient account' });
+		const resourceAddress = await vscode.window.showInputBox({ prompt: 'Enter the resource address', ignoreFocusOut: true });
+		const amount = await vscode.window.showInputBox({ prompt: 'Enter the amount', ignoreFocusOut: true });
+		const recipientAccount = await vscode.window.showInputBox({ prompt: 'Enter the recipient account', ignoreFocusOut: true });
 
 		if (resourceAddress && amount && recipientAccount) {
 			const command = `resim transfer ${resourceAddress}:${amount} ${recipientAccount}`;
@@ -238,7 +240,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// Resim New Simple Fungible Token Fixed Supply Command
 	context.subscriptions.push(vscode.commands.registerCommand('resim.new-token-fixed', async (label) => {
 		// TODO - Add validation to the input boxes to statically check for the correct input
-		const amount = await vscode.window.showInputBox({ prompt: 'Enter the amount' });
+		const amount = await vscode.window.showInputBox({ prompt: 'Enter the amount', ignoreFocusOut: true });
 
 		if (amount) {
 			const command = `resim new-token-fixed ${amount}`;
@@ -268,11 +270,11 @@ export function activate(context: vscode.ExtensionContext) {
 	// resim call-function <package_address> <blueprint_name> <function> <args>
 	context.subscriptions.push(vscode.commands.registerCommand('resim.call-function', async (label) => {
 		// TODO - Add validation to the input boxes to statically check for the correct input
-		const packageAddress = await vscode.window.showInputBox({ prompt: 'Enter the package address' });
-		const blueprintName = await vscode.window.showInputBox({ prompt: 'Enter the blueprint name' });
-		const functionName = await vscode.window.showInputBox({ prompt: 'Enter the function name' });
+		const packageAddress = await vscode.window.showInputBox({ prompt: 'Enter the package address', ignoreFocusOut: true });
+		const blueprintName = await vscode.window.showInputBox({ prompt: 'Enter the blueprint name', ignoreFocusOut: true });
+		const functionName = await vscode.window.showInputBox({ prompt: 'Enter the function name', ignoreFocusOut: true });
 		// TODO add logic to handle multiple arguments more elegantly
-		const args = await vscode.window.showInputBox({ prompt: 'Enter the function arguments seperated by a blank space' });
+		const args = await vscode.window.showInputBox({ prompt: 'Enter the function arguments seperated by a blank space', ignoreFocusOut: true });
 
 		if (packageAddress && blueprintName && functionName) {
 			const command = `resim call-function ${packageAddress} ${blueprintName} ${functionName} ${args}`;
@@ -302,10 +304,10 @@ export function activate(context: vscode.ExtensionContext) {
 	// resim call-method <component_address> <method> <args>
 	context.subscriptions.push(vscode.commands.registerCommand('resim.call-method', async (label) => {
 		// TODO - Add validation to the input boxes to statically check for the correct input
-		const componentAddress = await vscode.window.showInputBox({ prompt: 'Enter the component address' });
-		const methodName = await vscode.window.showInputBox({ prompt: 'Enter the method name' });
+		const componentAddress = await vscode.window.showInputBox({ prompt: 'Enter the component address', ignoreFocusOut: true });
+		const methodName = await vscode.window.showInputBox({ prompt: 'Enter the method name', ignoreFocusOut: true });
 		// TODO add logic to handle multiple arguments more elegantly
-		const args = await vscode.window.showInputBox({ prompt: 'Enter the method arguments seperated by a blank space' });
+		const args = await vscode.window.showInputBox({ prompt: 'Enter the method arguments seperated by a blank space', ignoreFocusOut: true });
 
 		if (componentAddress && methodName) {
 			const command = `resim call-method ${componentAddress} ${methodName} ${args}`;
