@@ -15,7 +15,7 @@
     "Snippets",
     "Other"
   ],
-  "icon": "/src/assets/scrypto-icon.png",
+  "icon": "/dist/assets/scrypto-icon.png",
   "activationEvents": [
     "onLanguage:rust"
   ],
@@ -36,8 +36,8 @@
         "name": "Radix Transaction Manifest",
         "configuration": "./language-configuration.json",
         "icon": {
-          "light": "/src/assets/scrypto-icon.png",
-          "dark": "/src/assets/scrypto-icon.png"
+          "light": "/dist/assets/scrypto-icon.png",
+          "dark": "/dist/assets/scrypto-icon.png"
         }
       }
     ],
@@ -63,7 +63,7 @@
         {
           "id": "radix-developer-tools",
           "title": "Radix Developer Tools",
-          "icon": "/src/assets/scrypto-24x24.png"
+          "icon": "/dist/assets/scrypto-24x24.png"
         }
       ]
     },
