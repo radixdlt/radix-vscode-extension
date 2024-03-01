@@ -3,7 +3,7 @@
   "displayName": "Radix Developer Tools",
   "description": "Radix Developer Tools for Visual Studio Code to help you build and deploy Radix applications using Scrypto and The Radix DLT Network.",
   "version": "0.0.1",
-  "publisher": "radixdlt",
+  "publisher": "RadixPublishing",
   "repository": {
     "type": "git",
     "url": "https://github.com/radixdlt/radix-vscode-extension"
