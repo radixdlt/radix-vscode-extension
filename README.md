@@ -3,7 +3,7 @@ Radix DLT Visual Studio Code Extension
 
 ## Features
 - Radix Transaction Manifest Language (RTML) syntax highlighting
-- Radadix Transaction Manifest Language (RTML) snippets
+- Radix Transaction Manifest Language (RTML) snippets
 - Scrypto Snippets
 - New Scrypto Package creation
 - New Radix dApp creation
