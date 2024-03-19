@@ -200,9 +200,9 @@ export function activate(context: vscode.ExtensionContext) {
 	// resim transfer [OPTIONS] <RESOURCE_ADDRESS>:<AMOUNT> <RECIPIENT>
 	context.subscriptions.push(vscode.commands.registerCommand('resim.transfer', async (label) => {
 		// TODO - Add validation to the input boxes to statically check for the correct input
-		const resourceAddress = await vscode.window.showInputBox({ prompt: 'Enter the resource address', ignoreFocusOut: true });
-		const amount = await vscode.window.showInputBox({ prompt: 'Enter the amount', ignoreFocusOut: true });
-		const recipientAccount = await vscode.window.showInputBox({ prompt: 'Enter the recipient account', ignoreFocusOut: true });
+		const resourceAddress = await vscode.window.showInputBox({ prompt: 'Enter the resource address for the resource you wish to transfer', ignoreFocusOut: true });
+		const amount = await vscode.window.showInputBox({ prompt: 'Enter the amount you wish to transfer', ignoreFocusOut: true });
+		const recipientAccount = await vscode.window.showInputBox({ prompt: 'Enter the recipient account address', ignoreFocusOut: true });
 
 		if (resourceAddress && amount && recipientAccount) {
 			const command = `resim transfer ${resourceAddress}:${amount} ${recipientAccount}`;
