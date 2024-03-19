@@ -230,11 +230,22 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Resim Publish Package Command
 	// TODO - add a check to see if the terminal location contains the scrypto-package
-	context.subscriptions.push(vscode.commands.registerCommand('resim.publish', (label) => {
-		// check if there is a resim terminal open already
-		const terminal = vscode.window.createTerminal(`Publish Package`);
-		terminal.sendText("cd scrypto-package && resim publish .");
-		terminal.show();
+	context.subscriptions.push(vscode.commands.registerCommand('resim.publish', async (label) => {
+		// Prompt for the relative path to the package
+		const packagePath = await vscode.window.showInputBox({
+			prompt: 'Enter the relative path to the package',
+			ignoreFocusOut: true
+		});
+		if (packagePath) {
+			const terminal = vscode.window.createTerminal(`Publish Package`);
+			terminal.sendText(`cd ${packagePath} && resim publish .`);
+			terminal.show();
+		}
+		else {
+			const terminal = vscode.window.createTerminal(`Publish Package`);
+			terminal.sendText(`resim publish .`);
+			terminal.show();
+		}
 	}));
 
 	// Resim New Simple Fungible Token Fixed Supply Command
