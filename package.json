@@ -76,6 +76,10 @@
         {
           "id": "resim-commands",
           "name": "Resim Commands"
+        },
+        {
+          "id": "stokenet-commands",
+          "name": "Stokenet Commands"
         }
       ]
     }

@@ -85,16 +85,20 @@ export function activate(context: vscode.ExtensionContext) {
 		{ label: 'Create NFT Badge', icon: nft_badge_icon, command: 'resim.create-nft-badge' },
 		{ label: 'Create Fungible w/Behaviors', icon: fungible_token_behaviors_icon, command: 'resim.new-token-behaviors' },
 	];
+	const stokenetCmd = [
+		{ label: 'New Account', icon: account_icon, command: 'stokenet.new-account' },
+		{ label: 'Get XRD', icon: reset_icon, command: 'stokenet.faucet' },
+		{ label: 'Deploy Package', icon: publish_icon, command: 'stokenet.deploy-package' },
+		{ label: 'Instantiate Blueprint', icon: ledger_icon, command: 'stokenet.instantiate-blueprint' },
+	];
 
 	// Tree View Data Providers
 	const templateTreeDataProvider = new ScryptoTreeDataProvider(templates);
 	const resimTreeDataProvider = new ScryptoTreeDataProvider(resimCmd);
+	const stokenetTreeDataProvider = new ScryptoTreeDataProvider(stokenetCmd);
 
 	// ######### Create New Project Commands #########
 	// ######### Scrypto Package Command #########
-	// TODO - add a check to see if the package already exists
-	// TODO - add a check to see if the terminal is already open
-	// TODO - add a prompt to ask for the package name in resim instead of the input box
 	context.subscriptions.push(vscode.commands.registerCommand('scrypto.new-package', async (label) => {
 		const packageName = await vscode.window.showInputBox({
 			prompt: 'Enter the package name',
@@ -392,10 +396,28 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 
+	// ######### Stokenet Commands #########
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.new-account', (label) => {
+		vscode.window.showInformationMessage('Stokenet New Account');
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.faucet', (label) => {
+		vscode.window.showInformationMessage('Stokenet Get XRD');
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.deploy-package', (label) => {
+		vscode.window.showInformationMessage('Stokenet Deploy Package');
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', (label) => {
+		vscode.window.showInformationMessage('Stokenet Instantiate Blueprint');
+	}));
+
 	// Add tree views to the extension context
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('create-new-project', templateTreeDataProvider));
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('resim-commands', resimTreeDataProvider));
+	context.subscriptions.push(vscode.window.registerTreeDataProvider('stokenet-commands', stokenetTreeDataProvider));
 }
 
 // This method is called when your extension is deactivated
