@@ -2,7 +2,7 @@
   "name": "radix-developer-tools",
   "displayName": "Radix Developer Tools",
   "description": "Radix Developer Tools for Visual Studio Code to help you build and deploy Radix applications using Scrypto and The Radix DLT Network.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "RadixPublishing",
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   ],
   "icon": "/dist/assets/scrypto-icon.png",
   "activationEvents": [
+    "onLanguage",
     "onLanguage:rust"
   ],
   "main": "./dist/extension.js",
@@ -34,7 +35,7 @@
           ".rtm"
         ],
         "name": "Radix Transaction Manifest",
-        "configuration": "./language-configuration.json",
+        "configuration": "/dist/language-configuration.json",
         "icon": {
           "light": "/dist/assets/scrypto-icon.png",
           "dark": "/dist/assets/scrypto-icon.png"
@@ -45,17 +46,17 @@
       {
         "language": "radixTransactionManifest",
         "scopeName": "source.rtm",
-        "path": "./syntaxes/rtm.tmLanguage.json"
+        "path": "/dist/syntaxes/rtm.tmLanguage.json"
       }
     ],
     "snippets": [
       {
         "language": "rust",
-        "path": "/src/snippets/scrypto-snippets.json"
+        "path": "/dist/snippets/scrypto-snippets.json"
       },
       {
         "language": "radixTransactionManifest",
-        "path": "/src/snippets/rtm-snippets.json"
+        "path": "/dist/snippets/rtm-snippets.json"
       }
     ],
     "viewsContainers": {
