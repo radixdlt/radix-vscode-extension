@@ -27,6 +27,9 @@ const extensionConfig = {
     new CopyPlugin({
       patterns: [
         { from: 'src/assets', to: 'assets' },
+        { from: 'src/snippets', to: 'snippets' },
+        { from: 'src/syntaxes', to: 'syntaxes' },
+        { from: 'src/language-configuration.json', to: '.' },
       ],
     }),
   ],
