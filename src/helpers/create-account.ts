@@ -1,9 +1,14 @@
 import crypto from 'node:crypto';
-import { LTSRadixEngineToolkit, RadixEngineToolkit, PrivateKey, PublicKey, NetworkId, ManifestBuilder, address, decimal, expression } from "@radixdlt/radix-engine-toolkit";
+import { LTSRadixEngineToolkit, SimpleTransactionBuilder, RadixEngineToolkit, PrivateKey, PublicKey, NetworkId, ManifestBuilder, decimal, expression } from "@radixdlt/radix-engine-toolkit";
 import * as bip39 from "bip39";
 import { ok } from "neverthrow";
 import { derivePath, getPublicKey } from "ed25519-hd-key";
+import { GatewayApiClient } from "@radixdlt/babylon-gateway-api-sdk";
 
+const gateway = GatewayApiClient.initialize({
+    basePath: "https://stokenet.radixdlt.com",
+    applicationName: "Radic VSCode Extension",
+});
 
 export async function createAccount() {
     const privateKeySeed = crypto.randomBytes(32).toString('hex');
@@ -22,12 +27,14 @@ export async function createAccount() {
 
     const privateKEy = await deriveChildKey.value.key.toString('hex');
     const publicKey = getPublicKey(deriveChildKey.value.key, false).toString('hex');
-    console.log('Private Key:', privateKEy);
-    console.log('Public Key:', publicKey);
+    console.log('Private Key hex string:', privateKEy);
+    console.log('Public Key hex string:', publicKey);
     // construct RET public key and private key
     const pubKey = new PublicKey.Ed25519(publicKey);
     const privKey = new PrivateKey.Ed25519(privateKEy);
+    const dervPubKey = privKey.publicKey();
     console.log('PubKey:', pubKey.toString());
+    console.log('Derived PubKey:', dervPubKey.toString());
     console.log('PrivKey:', privKey);
     // derive virtual account address
     const virtualAccount = await RadixEngineToolkit.Derive.virtualAccountAddressFromPublicKey(pubKey, NetworkId.Stokenet);
@@ -39,6 +46,24 @@ export async function createAccount() {
         .build();
     const strManifest = await RadixEngineToolkit.Instructions.convert(faucetManifest.instructions, NetworkId.Stokenet, "String");
     console.log('Faucet Manifest:', strManifest.value);
+    const currentEpoch = await gateway.transaction.innerClient.transactionConstruction();
+    console.log('Current Epoch:', currentEpoch);
+
+    const faucetTransaction = await SimpleTransactionBuilder.freeXrdFromFaucet({
+        networkId: NetworkId.Stokenet,
+        validFromEpoch: currentEpoch.ledger_state.epoch,
+        toAccount: virtualAccount
+    });
+    const transctionValid = await faucetTransaction.staticallyValidate(NetworkId.Stokenet);
+    console.log('Faucet Transaction:', faucetTransaction);
+    console.log('Transaction Valid:', transctionValid);
+    const transctionHex = await faucetTransaction.toHex();
+    const result = await gateway.transaction.innerClient.transactionSubmit({
+        transactionSubmitRequest: {
+            "notarized_transaction_hex": transctionHex,
+        }
+    });
+    console.log('Transaction Result:', result);
 }
 
 createAccount();
