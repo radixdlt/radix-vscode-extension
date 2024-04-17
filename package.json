@@ -81,6 +81,10 @@
         {
           "id": "stokenet-commands",
           "name": "Stokenet Commands"
+        },
+        {
+          "id": "stokenet-accounts",
+          "name": "Stokenet Accounts"
         }
       ]
     }

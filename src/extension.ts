@@ -92,11 +92,13 @@ export function activate(context: vscode.ExtensionContext) {
 		{ label: 'Deploy Package', icon: publish_icon, command: 'stokenet.deploy-package' },
 		{ label: 'Instantiate Blueprint', icon: ledger_icon, command: 'stokenet.instantiate-blueprint' },
 	];
+	const stokenetAccounts = [{ label: 'account1', icon: account_icon, command: 'account.account-detail' }];
 
 	// Tree View Data Providers
 	const templateTreeDataProvider = new ScryptoTreeDataProvider(templates);
 	const resimTreeDataProvider = new ScryptoTreeDataProvider(resimCmd);
 	const stokenetTreeDataProvider = new ScryptoTreeDataProvider(stokenetCmd);
+	const stokenetAccountsTreeDataProvider = new ScryptoTreeDataProvider(stokenetAccounts);
 
 	// ######### Create New Project Commands #########
 	// ######### Scrypto Package Command #########
@@ -455,6 +457,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('create-new-project', templateTreeDataProvider));
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('resim-commands', resimTreeDataProvider));
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('stokenet-commands', stokenetTreeDataProvider));
+	context.subscriptions.push(vscode.window.registerTreeDataProvider('stokenet-accounts', stokenetAccountsTreeDataProvider));
 }
 
 // This method is called when your extension is deactivated
