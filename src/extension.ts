@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { createAccount } from "./helpers/create-account";
+import { createAccount, airdropXRD } from "./helpers/create-account";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -416,6 +416,7 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	}));
 
+	// TODO Build Account List Tree View and use this for account detail view.
 	function getWebviewContent(virtualAccount: string, mnemonic: string, privateKey: string, publicKey: string) {
 		return `
         <h1>Stokenet Account</h1>
@@ -428,11 +429,13 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.faucet', async () => {
-		// prompt the user for the account address
-		// compose the faucet transaction and send to gateway
-		// display the transaction result
-		// show account entity details from gateway
-		vscode.window.showInformationMessage('Stokenet Get XRD');
+		// prompt the user for the account address to send the XRD to using AirdropXRD
+		const accountAddress = await vscode.window.showInputBox({ prompt: 'Enter the account address to send XRD to', ignoreFocusOut: true });
+		if (accountAddress) {
+			airdropXRD(accountAddress);
+			vscode.window.showInformationMessage(`Sending XRD to account: ${accountAddress}`);
+		}
+		// TODO show account entity details from gateway
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.deploy-package', async () => {
