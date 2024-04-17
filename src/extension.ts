@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { createAccount } from "./helpers/create-account";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -99,7 +100,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// ######### Create New Project Commands #########
 	// ######### Scrypto Package Command #########
-	context.subscriptions.push(vscode.commands.registerCommand('scrypto.new-package', async (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('scrypto.new-package', async () => {
 		const packageName = await vscode.window.showInputBox({
 			prompt: 'Enter the package name',
 			placeHolder: 'scrypto-package',
@@ -116,7 +117,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	// ######### Create Radix Dapp Command #########
-	context.subscriptions.push(vscode.commands.registerCommand('create-radix-dapp', (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('create-radix-dapp', () => {
 		const terminal = vscode.window.createTerminal(`Radix-Dapp`);
 		terminal.sendText("npx create-radix-dapp");
 		terminal.show();
@@ -125,7 +126,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// ######### Resim Commands #########
 	// Resim New Account Command
-	context.subscriptions.push(vscode.commands.registerCommand('resim.new-account', (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('resim.new-account', () => {
 		// check if there is a resim terminal open already
 		let isResimTerminalOpen = false;
 		vscode.window.terminals.forEach(terminal => {
@@ -144,7 +145,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	// Resim Reset Command
-	context.subscriptions.push(vscode.commands.registerCommand('resim.reset', (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('resim.reset', () => {
 		// check if there is a resim terminal open already
 		let isResimTerminalOpen = false;
 		vscode.window.terminals.forEach(terminal => {
@@ -163,7 +164,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	// Resim Show Configs Command
-	context.subscriptions.push(vscode.commands.registerCommand('resim.show-configs', (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('resim.show-configs', () => {
 		// check if there is a resim terminal open already
 		let isResimTerminalOpen = false;
 		vscode.window.terminals.forEach(terminal => {
@@ -182,7 +183,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	// Resim Show Ledger Command
-	context.subscriptions.push(vscode.commands.registerCommand('resim.show-ledger', (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('resim.show-ledger', () => {
 		// check if there is a resim terminal open already
 		let isResimTerminalOpen = false;
 		vscode.window.terminals.forEach(terminal => {
@@ -202,7 +203,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Resim Transfer Command
 	// resim transfer [OPTIONS] <RESOURCE_ADDRESS>:<AMOUNT> <RECIPIENT>
-	context.subscriptions.push(vscode.commands.registerCommand('resim.transfer', async (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('resim.transfer', async () => {
 		// TODO - Add validation to the input boxes to statically check for the correct input
 		const resourceAddress = await vscode.window.showInputBox({ prompt: 'Enter the resource address for the resource you wish to transfer', ignoreFocusOut: true });
 		const amount = await vscode.window.showInputBox({ prompt: 'Enter the amount you wish to transfer', ignoreFocusOut: true });
@@ -234,7 +235,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Resim Publish Package Command
 	// TODO - add a check to see if the terminal location contains the scrypto-package
-	context.subscriptions.push(vscode.commands.registerCommand('resim.publish', async (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('resim.publish', async () => {
 		// Prompt for the relative path to the package
 		const packagePath = await vscode.window.showInputBox({
 			prompt: 'Enter the relative path to the package',
@@ -253,7 +254,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	// Resim New Simple Fungible Token Fixed Supply Command
-	context.subscriptions.push(vscode.commands.registerCommand('resim.new-token-fixed', async (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('resim.new-token-fixed', async () => {
 		// TODO - Add validation to the input boxes to statically check for the correct input
 		const amount = await vscode.window.showInputBox({ prompt: 'Enter the amount', ignoreFocusOut: true });
 
@@ -283,7 +284,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Resim Call Function Command
 	// resim call-function <package_address> <blueprint_name> <function> <args>
-	context.subscriptions.push(vscode.commands.registerCommand('resim.call-function', async (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('resim.call-function', async () => {
 		// TODO - Add validation to the input boxes to statically check for the correct input
 		const packageAddress = await vscode.window.showInputBox({ prompt: 'Enter the package address', ignoreFocusOut: true });
 		const blueprintName = await vscode.window.showInputBox({ prompt: 'Enter the blueprint name', ignoreFocusOut: true });
@@ -317,7 +318,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Resim Call Method Command
 	// resim call-method <component_address> <method> <args>
-	context.subscriptions.push(vscode.commands.registerCommand('resim.call-method', async (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('resim.call-method', async () => {
 		// TODO - Add validation to the input boxes to statically check for the correct input
 		const componentAddress = await vscode.window.showInputBox({ prompt: 'Enter the component address', ignoreFocusOut: true });
 		const methodName = await vscode.window.showInputBox({ prompt: 'Enter the method name', ignoreFocusOut: true });
@@ -350,7 +351,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Resim Create Simple NFT Badge Command
 	// resim new-simple-badge
-	context.subscriptions.push(vscode.commands.registerCommand('resim.create-nft-badge', async (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('resim.create-nft-badge', async () => {
 		const command = `resim new-simple-badge`;
 
 		// check if there is a resim terminal open already
@@ -374,7 +375,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// Resim Create Fungible Token with Behaviors Command
 	// resim run create-fungible-token-with-behaviors.rtm
 	// TODO - Create custom manifest file for the behaviors
-	context.subscriptions.push(vscode.commands.registerCommand('resim.new-token-behaviors', async (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('resim.new-token-behaviors', async () => {
 		// Test with simple manifest first
 		const command = `resim run ${__dirname}/assets/manifests/token_behaviors.rtm`;
 
@@ -397,19 +398,52 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	// ######### Stokenet Commands #########
-	context.subscriptions.push(vscode.commands.registerCommand('stokenet.new-account', (label) => {
-		vscode.window.showInformationMessage('Stokenet New Account');
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.new-account', async () => {
+		// Create a new account and airdrop it with XRD
+		createAccount(context).then(({ virtualAccount, mnemonic, privateKey, publicKey }) => {
+			// Create and show a new webview
+			const panel = vscode.window.createWebviewPanel(
+				'stokenetAccount', // Identifies the type of the webview. Used internally
+				'Stokenet Account', // Title of the panel displayed to the user
+				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+				{} // Webview options. More on these later.
+			);
+
+			// Set its HTML content
+			panel.webview.html = getWebviewContent(virtualAccount, mnemonic, privateKey, publicKey);
+
+			context.globalState.update('stokenet-account', virtualAccount);
+		});
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('stokenet.faucet', (label) => {
+	function getWebviewContent(virtualAccount: string, mnemonic: string, privateKey: string, publicKey: string) {
+		return `
+        <h1>Stokenet Account</h1>
+        <p><strong>Account Address:</strong> ${virtualAccount}</p>
+        <p>Mnemonic: ${mnemonic}</p>
+        <p>Private Key: ${privateKey}</p>
+        <p>Public Key: ${publicKey}</p>
+		<a href="https://stokenet-dashboard.radixdlt.com/account/${virtualAccount}/tokens">View Account on Dashboard</a>
+    `;
+	}
+
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.faucet', async () => {
+		// prompt the user for the account address
+		// compose the faucet transaction and send to gateway
+		// display the transaction result
+		// show account entity details from gateway
 		vscode.window.showInformationMessage('Stokenet Get XRD');
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('stokenet.deploy-package', (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.deploy-package', async () => {
+		// prompt the user for the package path
+		// compose the deploy package transaction and send to gateway
+		// display the transaction result
+		// show package entity details from gateway
 		vscode.window.showInformationMessage('Stokenet Deploy Package');
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', (label) => {
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', () => {
 		vscode.window.showInformationMessage('Stokenet Instantiate Blueprint');
 	}));
 
