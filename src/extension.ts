@@ -14,9 +14,12 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	class ScryptoTreeDataProvider implements vscode.TreeDataProvider<string> {
-		private items: { label: string, icon: vscode.ThemeIcon | string, command: string }[];
+		private _onDidChangeTreeData: vscode.EventEmitter<string | undefined | null | void> = new vscode.EventEmitter<string | undefined | null | void>();
+		readonly onDidChangeTreeData: vscode.Event<string | undefined | null | void> = this._onDidChangeTreeData.event;
 
-		constructor(items: { label: string, icon: vscode.ThemeIcon | string, command: string }[]) {
+		private items: { label: string, icon: vscode.ThemeIcon | string, command: vscode.Command }[];
+
+		constructor(items: { label: string, icon: vscode.ThemeIcon | string, command: vscode.Command }[]) {
 			this.items = items;
 		}
 
@@ -36,9 +39,9 @@ export function activate(context: vscode.ExtensionContext) {
 					id: item.label,
 					collapsibleState: vscode.TreeItemCollapsibleState.None,
 					command: {
-						command: item.command,
-						title: item.label,
-						arguments: [item.label]
+						command: item.command.command,
+						title: item.command.title,
+						arguments: [item.command.arguments]
 					}
 				};
 			}
@@ -52,6 +55,25 @@ export function activate(context: vscode.ExtensionContext) {
 				return Promise.resolve(this.items.map(item => item.label));
 			}
 		}
+		// method to add new items to the tree view and refresh the view
+		addNewItem(item: { label: string, icon: vscode.ThemeIcon | string, command: vscode.Command }) {
+			this.items.push(item);
+			this._onDidChangeTreeData.fire();
+		}
+	}
+
+	// This is the webview template for the stokenet account detail view
+	function getWebviewContent(accountName: string, virtualAccount: string, mnemonic: string, privateKey: string, publicKey: string) {
+		return `
+        <h1>Stokenet Account</h1>
+		<p> View the details of an account by clicking on the account name in the Stokenet Accounts tree view panel.</p>
+		<h3>Account Name: ${accountName}</h3>
+        <p><strong>Account Address:</strong> ${virtualAccount}</p>
+        <p>Mnemonic: ${mnemonic}</p>
+        <p>Private Key: ${privateKey}</p>
+        <p>Public Key: ${publicKey}</p>
+		<a href="https://stokenet-dashboard.radixdlt.com/account/${virtualAccount}/tokens">View Account on Dashboard</a>
+    `;
 	}
 
 	// vscode.ThemeIcon - https://code.visualstudio.com/api/references/icons-in-labels
@@ -68,37 +90,48 @@ export function activate(context: vscode.ExtensionContext) {
 	const call_method_icon = new vscode.ThemeIcon('symbol-method');
 	const nft_badge_icon = new vscode.ThemeIcon('verified-filled');
 	const fungible_token_behaviors_icon = new vscode.ThemeIcon('symbol-misc');
+
 	// Tree View Items
 	const templates = [
-		{ label: 'Scrypto Package', icon: package_icon, command: 'scrypto.new-package' },
-		{ label: 'Create Radix dApp', icon: dapp_icon, command: 'create-radix-dapp' },
+		{ label: 'Scrypto Package', icon: package_icon, command: { command: 'scrypto.new-package', title: 'Scrypto New Package', arguments: [] } },
+		{ label: 'Create Radix dApp', icon: dapp_icon, command: { command: 'create-radix-dapp', title: 'Create Radix dApp', arguments: [] } },
 	];
 	const resimCmd = [
-		{ label: 'New Account', icon: account_icon, command: 'resim.new-account' },
-		{ label: 'Reset', icon: reset_icon, command: 'resim.reset' },
-		{ label: 'Publish', icon: publish_icon, command: 'resim.publish' },
-		{ label: 'Show Configs', icon: configs_icon, command: 'resim.show-configs' },
-		{ label: 'Show Ledger', icon: ledger_icon, command: 'resim.show-ledger' },
-		{ label: 'Transfer', icon: transfer_icon, command: 'resim.transfer' },
-		{ label: 'Create Fungible Token', icon: fungible_token_icon, command: 'resim.new-token-fixed' },
-		{ label: 'Call Function', icon: call_function_icon, command: 'resim.call-function' },
-		{ label: 'Call Method', icon: call_method_icon, command: 'resim.call-method' },
-		{ label: 'Create NFT Badge', icon: nft_badge_icon, command: 'resim.create-nft-badge' },
-		{ label: 'Create Fungible w/Behaviors', icon: fungible_token_behaviors_icon, command: 'resim.new-token-behaviors' },
+		{ label: 'New Account', icon: account_icon, command: { command: 'resim.new-account', title: 'New Account', arguments: [] } },
+		{ label: 'Reset', icon: reset_icon, command: { command: 'resim.reset', title: 'Reset', arguments: [] } },
+		{ label: 'Publish', icon: publish_icon, command: { command: 'resim.publish', title: 'Publish', arguments: [] } },
+		{ label: 'Show Configs', icon: configs_icon, command: { command: 'resim.show-configs', title: 'Show Configs', arguments: [] } },
+		{ label: 'Show Ledger', icon: ledger_icon, command: { command: 'resim.show-ledger', title: 'Show Ledger', arguments: [] } },
+		{ label: 'Transfer', icon: transfer_icon, command: { command: 'resim.transfer', title: 'Transfer', arguments: [] } },
+		{ label: 'Create Fungible Token', icon: fungible_token_icon, command: { command: 'resim.new-token-fixed', title: 'Create Fungible Token', arguments: [] } },
+		{ label: 'Call Function', icon: call_function_icon, command: { command: 'resim.call-function', title: 'Call Function', arguments: [] } },
+		{ label: 'Call Method', icon: call_method_icon, command: { command: 'resim.call-method', title: 'Call Method', arguments: [] } },
+		{ label: 'Create NFT Badge', icon: nft_badge_icon, command: { command: 'resim.create-nft-badge', title: 'Create NFT Badge', arguments: [] } },
+		{ label: 'Create Fungible w/Behaviors', icon: fungible_token_behaviors_icon, command: { command: 'resim.new-token-behaviors', title: 'Create Fungible w/Behaviors', arguments: [] } },
 	];
 	const stokenetCmd = [
-		{ label: 'New Account', icon: account_icon, command: 'stokenet.new-account' },
-		{ label: 'Get XRD', icon: reset_icon, command: 'stokenet.faucet' },
-		{ label: 'Deploy Package', icon: publish_icon, command: 'stokenet.deploy-package' },
-		{ label: 'Instantiate Blueprint', icon: ledger_icon, command: 'stokenet.instantiate-blueprint' },
+		{ label: 'New Account', icon: account_icon, command: { command: 'stokenet.new-account', title: 'New Account', arguments: [] } },
+		{ label: 'Get XRD', icon: reset_icon, command: { command: 'stokenet.faucet', title: 'Airdrop XRD', arguments: [] } },
+		{ label: 'Deploy Package', icon: publish_icon, command: { command: 'stokenet.deploy-package', title: 'Deploy Package', arguments: [] } },
+		{ label: 'Instantiate Blueprint', icon: ledger_icon, command: { command: 'stokenet.instantiate-blueprint', title: 'Instantiate Blueprint', arguments: [] } },
 	];
-	const stokenetAccounts = [{ label: 'account1', icon: account_icon, command: 'account.account-detail' }];
+	const stokenetAccountsList = [];
+	// *********** REMOVE THIS WHEN DONE With Delete Functionality *************************
+	// TEMP - uncomment and restart debugger to clear the stokenet accounts list 
+	// context.globalState.update('stokenet-accounts', []);
+	// ***********************************************************
+	let stokenetAccounts: { accountName: string, virtualAccount: string, mnemonic: string, privateKey: string, publicKey: string }[] = [];
+	stokenetAccounts = context.globalState.get('stokenet-accounts') || [];
+	// set stokenet accounts list from the global context
+	stokenetAccountsList.push(...stokenetAccounts.map(account => {
+		return { label: account.accountName, icon: account_icon, command: { command: 'account.account-detail', title: 'Account Detail', arguments: [account.virtualAccount] } };
+	}));
 
 	// Tree View Data Providers
 	const templateTreeDataProvider = new ScryptoTreeDataProvider(templates);
 	const resimTreeDataProvider = new ScryptoTreeDataProvider(resimCmd);
 	const stokenetTreeDataProvider = new ScryptoTreeDataProvider(stokenetCmd);
-	const stokenetAccountsTreeDataProvider = new ScryptoTreeDataProvider(stokenetAccounts);
+	const stokenetAccountsTreeDataProvider = new ScryptoTreeDataProvider(stokenetAccountsList);
 
 	// ######### Create New Project Commands #########
 	// ######### Scrypto Package Command #########
@@ -401,34 +434,29 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// ######### Stokenet Commands #########
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.new-account', async () => {
-		// Create a new account and airdrop it with XRD
-		createAccount(context).then(({ virtualAccount, mnemonic, privateKey, publicKey }) => {
-			// Create and show a new webview
-			const panel = vscode.window.createWebviewPanel(
-				'stokenetAccount', // Identifies the type of the webview. Used internally
-				'Stokenet Account', // Title of the panel displayed to the user
-				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-				{} // Webview options. More on these later.
-			);
+		// prompt the user for an account name
+		const accountName = await vscode.window.showInputBox({ prompt: 'Enter the account name', ignoreFocusOut: true });
+		if (accountName) {
+			// Create a new account and airdrop it with XRD
+			createAccount().then(({ virtualAccount, mnemonic, privateKey, publicKey }) => {
+				// Add the account to the stokenet accounts tree view
+				stokenetAccountsTreeDataProvider.addNewItem({ label: accountName, icon: account_icon, command: { command: 'account.account-detail', title: 'Account Detail', arguments: [virtualAccount] } });
+				// Add the account to global context
+				stokenetAccounts.push({ accountName, virtualAccount, mnemonic, privateKey, publicKey });
+				context.globalState.update('stokenet-accounts', stokenetAccounts);
 
-			// Set its HTML content
-			panel.webview.html = getWebviewContent(virtualAccount, mnemonic, privateKey, publicKey);
-
-			context.globalState.update('stokenet-account', virtualAccount);
-		});
+				// Create and show a new webview
+				const panel = vscode.window.createWebviewPanel(
+					'stokenetAccount', // Identifies the type of the webview. Used internally
+					accountName, // Title of the panel displayed to the user
+					vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+					{} // Webview options. More on these later.
+				);
+				// Set its HTML content
+				panel.webview.html = getWebviewContent(accountName, virtualAccount, mnemonic, privateKey, publicKey);
+			});
+		}
 	}));
-
-	// TODO Build Account List Tree View and use this for account detail view.
-	function getWebviewContent(virtualAccount: string, mnemonic: string, privateKey: string, publicKey: string) {
-		return `
-        <h1>Stokenet Account</h1>
-        <p><strong>Account Address:</strong> ${virtualAccount}</p>
-        <p>Mnemonic: ${mnemonic}</p>
-        <p>Private Key: ${privateKey}</p>
-        <p>Public Key: ${publicKey}</p>
-		<a href="https://stokenet-dashboard.radixdlt.com/account/${virtualAccount}/tokens">View Account on Dashboard</a>
-    `;
-	}
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.faucet', async () => {
 		// prompt the user for the account address to send the XRD to using AirdropXRD
@@ -448,8 +476,31 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Stokenet Deploy Package');
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', async () => {
 		vscode.window.showInformationMessage('Stokenet Instantiate Blueprint');
+	}));
+
+	// Stoknet Account Detail Command
+	context.subscriptions.push(vscode.commands.registerCommand('account.account-detail', async (virtualAccount) => {
+		// Get the account details from the global context
+		stokenetAccounts = await context.globalState.get('stokenet-accounts') || [];
+		// Find the account with matching accountName
+		const selectedAccount = stokenetAccounts.find(account => {
+			return account.virtualAccount == virtualAccount;
+		});
+		if (selectedAccount) {
+			// Create and show a new webview
+			const panel = vscode.window.createWebviewPanel(
+				'stokenetAccount', // Identifies the type of the webview. Used internally
+				selectedAccount.accountName, // Title of the panel displayed to the user
+				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+				{} // Webview options. More on these later.
+			);
+			// Display the account properties in the webview
+			panel.webview.html = getWebviewContent(selectedAccount.accountName, selectedAccount.virtualAccount, selectedAccount.mnemonic, selectedAccount.privateKey, selectedAccount.publicKey);
+		} else {
+			vscode.window.showErrorMessage('Account not found');
+		}
 	}));
 
 	// Add tree views to the extension context
