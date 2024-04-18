@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { LTSRadixEngineToolkit, SimpleTransactionBuilder, RadixEngineToolkit, PrivateKey, PublicKey, NetworkId, ManifestBuilder, decimal, expression } from "@radixdlt/radix-engine-toolkit";
+import { SimpleTransactionBuilder, RadixEngineToolkit, PublicKey, NetworkId } from "@radixdlt/radix-engine-toolkit";
 import * as bip39 from "bip39";
 import { ok } from "neverthrow";
 import { derivePath, getPublicKey } from "ed25519-hd-key";
@@ -31,7 +31,7 @@ export async function airdropXRD(accountAddress: string) {
     console.log('Transaction Result:', result);
 };
 
-export async function createAccount(context: vscode.ExtensionContext) {
+export async function createAccount() {
     const privateKeySeed = crypto.randomBytes(32).toString('hex');
     const mnemonic = bip39.entropyToMnemonic(privateKeySeed);
     const mnemonicToSeed = ok(bip39.mnemonicToSeedSync(mnemonic).toString('hex'));
@@ -47,21 +47,6 @@ export async function createAccount(context: vscode.ExtensionContext) {
     const virtualAccount = await RadixEngineToolkit.Derive.virtualAccountAddressFromPublicKey(pubKey, NetworkId.Stokenet);
 
     airdropXRD(virtualAccount);
-    // fetch current epoch from gateway for transaction construction
-    // const currentEpoch = await gateway.transaction.innerClient.transactionConstruction();
-    // const faucetTransaction = await SimpleTransactionBuilder.freeXrdFromFaucet({
-    //     networkId: NetworkId.Stokenet,
-    //     validFromEpoch: currentEpoch.ledger_state.epoch,
-    //     toAccount: virtualAccount
-    // });
-    // const transctionHex = await faucetTransaction.toHex();
-    // const intentHash = faucetTransaction.intentHash.id;
-    // console.log('intent hash:', intentHash);
-    // const result = await gateway.transaction.innerClient.transactionSubmit({
-    //     transactionSubmitRequest: {
-    //         notarized_transaction_hex: transctionHex,
-    //     }
-    // });
 
     return { virtualAccount, mnemonic, privateKey, publicKey };
 }
