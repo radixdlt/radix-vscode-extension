@@ -22,13 +22,11 @@ export async function airdropXRD(accountAddress: string) {
 
     const transctionHex = await faucetTransaction.toHex();
     const intentHash = faucetTransaction.intentHash.id;
-    console.log('intent hash:', intentHash);
     const result = await gateway.transaction.innerClient.transactionSubmit({
         transactionSubmitRequest: {
             notarized_transaction_hex: transctionHex,
         }
     });
-    console.log('Transaction Result:', result);
 };
 
 export async function createAccount() {
