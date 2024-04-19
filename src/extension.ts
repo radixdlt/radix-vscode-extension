@@ -60,6 +60,11 @@ export function activate(context: vscode.ExtensionContext) {
 			this.items.push(item);
 			this._onDidChangeTreeData.fire();
 		}
+		// method to remove items from the tree view and refresh the view
+		removeItem(label: string) {
+			this.items = this.items.filter(item => item.label !== label);
+			this._onDidChangeTreeData.fire();
+		}
 	}
 
 	// This is the webview template for the stokenet account detail view
@@ -90,6 +95,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const call_method_icon = new vscode.ThemeIcon('symbol-method');
 	const nft_badge_icon = new vscode.ThemeIcon('verified-filled');
 	const fungible_token_behaviors_icon = new vscode.ThemeIcon('symbol-misc');
+	const trash = new vscode.ThemeIcon('trash');
 
 	// Tree View Items
 	const templates = [
@@ -114,12 +120,9 @@ export function activate(context: vscode.ExtensionContext) {
 		{ label: 'Get XRD', icon: reset_icon, command: { command: 'stokenet.faucet', title: 'Airdrop XRD', arguments: [] } },
 		{ label: 'Deploy Package', icon: publish_icon, command: { command: 'stokenet.deploy-package', title: 'Deploy Package', arguments: [] } },
 		{ label: 'Instantiate Blueprint', icon: ledger_icon, command: { command: 'stokenet.instantiate-blueprint', title: 'Instantiate Blueprint', arguments: [] } },
+		{ label: 'Remove Account', icon: trash, command: { command: 'stokenet.remove-account', title: 'Remove Account', arguments: [] } },
 	];
-	const stokenetAccountsList = [];
-	// *********** REMOVE THIS WHEN DONE With Delete Functionality *************************
-	// TEMP - uncomment and restart debugger to clear the stokenet accounts list 
-	// context.globalState.update('stokenet-accounts', []);
-	// ***********************************************************
+	let stokenetAccountsList: { label: string, icon: vscode.ThemeIcon, command: { command: string, title: string, arguments: string[] } }[] = [];
 	let stokenetAccounts: { accountName: string, virtualAccount: string, mnemonic: string, privateKey: string, publicKey: string }[] = [];
 	stokenetAccounts = context.globalState.get('stokenet-accounts') || [];
 	// set stokenet accounts list from the global context
@@ -478,6 +481,28 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', async () => {
 		vscode.window.showInformationMessage('Stokenet Instantiate Blueprint');
+	}));
+
+	// Remove Account Command
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.remove-account', async () => {
+		// Get the stokenetAccounts array from the global context
+		stokenetAccounts = await context.globalState.get('stokenet-accounts') || [];
+		// Prompt the user to select the account they want to remove
+		const accountToRemove = await vscode.window.showQuickPick(stokenetAccounts.map(account => ({
+			label: account.accountName,
+			description: account.virtualAccount
+		})), {
+			placeHolder: 'Select the account you want to remove'
+		});
+		// If an account is selected
+		if (accountToRemove) {
+			// Remove the selected account from the stokenetAccounts array
+			stokenetAccounts = stokenetAccounts.filter(account => account.virtualAccount !== accountToRemove.description);
+			// Update the stokenetAccounts array in the global context
+			await context.globalState.update('stokenet-accounts', stokenetAccounts);
+			// Remove the Item and Refresh the tree view
+			stokenetAccountsTreeDataProvider.removeItem(accountToRemove.label);
+		}
 	}));
 
 	// Stoknet Account Detail Command
