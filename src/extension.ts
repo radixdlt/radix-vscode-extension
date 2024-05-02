@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { createAccount, airdropXRD } from "./helpers/create-account";
+import { deployPackage } from "./helpers/deploy-package";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -473,10 +474,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.deploy-package', async () => {
 		// prompt the user for the package path
+		const packagePath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package', ignoreFocusOut: true });
+		const payerAccount = await stokenetAccounts[0];
+		const packageWasmPath = `${packagePath}/target/wasm32-unknown-unknown/release/scrypto_package.wasm`;
+		const packageRpdPath = `${packagePath}/target/wasm32-unknown-unknown/release/scrypto_package.rpd`;
 		// compose the deploy package transaction and send to gateway
+		deployPackage(payerAccount, packageWasmPath, packageRpdPath);
 		// display the transaction result
 		// show package entity details from gateway
-		vscode.window.showInformationMessage('Stokenet Deploy Package');
+		vscode.window.showInformationMessage(`Stokenet Deploy Package @path ${packagePath}`);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', async () => {
@@ -506,7 +512,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	// Stoknet Account Detail Command
-	context.subscriptions.push(vscode.commands.registerCommand('account.account-detail', async (virtualAccount) => {
+	context.subscriptions.push(vscode.commands.registerCommand('account.account-detail', async (virtualAccount: string) => {
 		// Get the account details from the global context
 		stokenetAccounts = await context.globalState.get('stokenet-accounts') || [];
 		// Find the account with matching accountName
