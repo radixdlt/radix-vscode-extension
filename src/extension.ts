@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { createAccount, airdropXRD } from "./helpers/create-account";
 import { deployPackage } from "./helpers/deploy-package";
+import * as fs from 'fs';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -475,14 +476,53 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.deploy-package', async () => {
 		// prompt the user for the package path
 		const packagePath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package', ignoreFocusOut: true });
+		const blueprintModName = await vscode.window.showInputBox({ prompt: 'Enter the blueprint mod name', ignoreFocusOut: true });
 		const payerAccount = await stokenetAccounts[0];
-		const packageWasmPath = `${packagePath}/target/wasm32-unknown-unknown/release/scrypto_package.wasm`;
-		const packageRpdPath = `${packagePath}/target/wasm32-unknown-unknown/release/scrypto_package.rpd`;
+		// check if the path is valid if not display an error message
+		const packageWasmPath = `${packagePath}/target/wasm32-unknown-unknown/release/${blueprintModName}.wasm`;
+		const packageRpdPath = `${packagePath}/target/wasm32-unknown-unknown/release/${blueprintModName}.rpd`;
+
+		let wasmPathisValid = fs.existsSync(packageWasmPath);
+		let rpdPathisValid = fs.existsSync(packageRpdPath);
+		if (!wasmPathisValid || !rpdPathisValid) {
+			// Path is invalid, display an error message
+			vscode.window.showErrorMessage('Invalid package path or blueprint mod name. Please check the path and ensure you have built the package with the `scypto build` command.');
+			return;
+		}
+		vscode.window.showInformationMessage(`Deploying package to stokenet from @path ${packagePath}`);
+
 		// compose the deploy package transaction and send to gateway
-		deployPackage(payerAccount, packageWasmPath, packageRpdPath);
-		// display the transaction result
-		// show package entity details from gateway
-		vscode.window.showInformationMessage(`Stokenet Deploy Package @path ${packagePath}`);
+		deployPackage(payerAccount, packageWasmPath, packageRpdPath).then((reciept) => {
+			if (reciept && reciept.transaction && reciept.transaction.affected_global_entities) {
+				// Create a webview panel
+				const panel = vscode.window.createWebviewPanel(
+					'stokenetPackage',
+					'Stokenet Package',
+					vscode.ViewColumn.One,
+					{
+						enableScripts: true // Enable scripts in the webview
+					}
+				);
+
+				// Set the HTML content of the webview panel
+				panel.webview.html = `
+					<html>
+					<body>
+						<h1>Stokenet Package Deployed Successfully!</h1>
+						<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
+						<button onclick="copyPackageAddress()">Copy Package Address</button>
+						<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>						
+						<script>
+							function copyPackageAddress() {
+								const packageAddress = document.getElementById('package-address').innerText;
+								navigator.clipboard.writeText(packageAddress);
+							}
+						</script>
+					</body>
+					</html>
+				`;
+			}
+		});
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', async () => {
