@@ -98,6 +98,8 @@ export function activate(context: vscode.ExtensionContext) {
 	const nft_badge_icon = new vscode.ThemeIcon('verified-filled');
 	const fungible_token_behaviors_icon = new vscode.ThemeIcon('symbol-misc');
 	const trash = new vscode.ThemeIcon('trash');
+	const dashboard_icon = new vscode.ThemeIcon('dashboard');
+	const console_icon = new vscode.ThemeIcon('preview');
 
 	// Tree View Items
 	const templates = [
@@ -119,9 +121,11 @@ export function activate(context: vscode.ExtensionContext) {
 	];
 	const stokenetCmd = [
 		{ label: 'New Account', icon: account_icon, command: { command: 'stokenet.new-account', title: 'New Account', arguments: [] } },
-		{ label: 'Get XRD', icon: reset_icon, command: { command: 'stokenet.faucet', title: 'Airdrop XRD', arguments: [] } },
+		{ label: 'Get XRD', icon: transfer_icon, command: { command: 'stokenet.faucet', title: 'Airdrop XRD', arguments: [] } },
 		{ label: 'Deploy Package', icon: publish_icon, command: { command: 'stokenet.deploy-package', title: 'Deploy Package', arguments: [] } },
-		{ label: 'Instantiate Blueprint', icon: ledger_icon, command: { command: 'stokenet.instantiate-blueprint', title: 'Instantiate Blueprint', arguments: [] } },
+		// { label: 'Instantiate Blueprint', icon: ledger_icon, command: { command: 'stokenet.instantiate-blueprint', title: 'Instantiate Blueprint', arguments: [] } },
+		{ label: 'Open Dashboard', icon: dashboard_icon, command: { command: 'stokenet.dashboard', title: 'Open Dashboard', arguments: [] } },
+		{ label: 'Open Dev Console', icon: console_icon, command: { command: 'stokenet.console', title: 'Open Console', arguments: [] } },
 		{ label: 'Remove Account', icon: trash, command: { command: 'stokenet.remove-account', title: 'Remove Account', arguments: [] } },
 	];
 	let stokenetAccountsList: { label: string, icon: vscode.ThemeIcon, command: { command: string, title: string, arguments: string[] } }[] = [];
@@ -525,8 +529,16 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', async () => {
-		vscode.window.showInformationMessage('Stokenet Instantiate Blueprint');
+	// context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', async () => {
+	// 	vscode.window.showInformationMessage('Stokenet Instantiate Blueprint');
+	// }));
+
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.dashboard', async () => {
+		vscode.env.openExternal(vscode.Uri.parse('https://stokenet-dashboard.radixdlt.com'));
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('stokenet.console', async () => {
+		vscode.env.openExternal(vscode.Uri.parse('https://stokenet-console.radixdlt.com'));
 	}));
 
 	// Remove Account Command
