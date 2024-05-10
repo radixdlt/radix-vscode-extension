@@ -478,38 +478,101 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.deploy-package', async () => {
-		// prompt the user for the package path
-		const packagePath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package', ignoreFocusOut: true });
-		const blueprintModName = await vscode.window.showInputBox({ prompt: 'Enter the blueprint mod name', ignoreFocusOut: true });
-		const payerAccount = await stokenetAccounts[0];
-		// check if the path is valid if not display an error message
-		const packageWasmPath = `${packagePath}/target/wasm32-unknown-unknown/release/${blueprintModName}.wasm`;
-		const packageRpdPath = `${packagePath}/target/wasm32-unknown-unknown/release/${blueprintModName}.rpd`;
-
-		let wasmPathisValid = fs.existsSync(packageWasmPath);
-		let rpdPathisValid = fs.existsSync(packageRpdPath);
-		if (!wasmPathisValid || !rpdPathisValid) {
-			// Path is invalid, display an error message
-			vscode.window.showErrorMessage('Invalid package path or blueprint mod name. Please check the path and ensure you have built the package with the `scypto build` command.');
-			return;
+		function isFileExtensionValid(filePath: string, extension: string): boolean {
+			const fileExtension = filePath.slice(filePath.lastIndexOf('.'));
+			return fileExtension === extension;
 		}
-		vscode.window.showInformationMessage(`Deploying package to stokenet from @path ${packagePath}`);
-
-		// compose the deploy package transaction and send to gateway
-		deployPackage(payerAccount, packageWasmPath, packageRpdPath).then((reciept) => {
-			if (reciept && reciept.transaction && reciept.transaction.affected_global_entities) {
-				// Create a webview panel
-				const panel = vscode.window.createWebviewPanel(
-					'stokenetPackage',
-					'Stokenet Package',
-					vscode.ViewColumn.One,
-					{
-						enableScripts: true // Enable scripts in the webview
+		// Check the workspace context for the package path and propmpt to update or continue if it exists
+		if (!context.workspaceState.get('packageWasmPath') || !context.workspaceState.get('packageRpdPath')) {
+			// prompt the user for the package path
+			const packageWasmPath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package Wasm file', ignoreFocusOut: true });
+			const packageRpdPath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package Rpd file', ignoreFocusOut: true });
+			// if (fs.lstatSync(packageWasmPath).isFile() && fs.lstatSync(packageRpdPath).isFile()) {
+			const wasmPathisValid = packageWasmPath && fs.existsSync(packageWasmPath) && fs.lstatSync(packageWasmPath).isFile() && isFileExtensionValid(packageWasmPath, '.wasm');
+			const rpdPathisValid = packageRpdPath && fs.existsSync(packageRpdPath) && fs.lstatSync(packageRpdPath).isFile() && isFileExtensionValid(packageRpdPath, '.rpd');
+			if (!wasmPathisValid || !rpdPathisValid) {
+				// Path is invalid, display an error message
+				vscode.window.showErrorMessage('Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.');
+				// Prompt the user to enter the path again or clear the workspace context
+				const userChoice = await vscode.window.showQuickPick(['Clear Workspace Context', 'Update Package Paths'], { placeHolder: 'Choose an option' });
+				if (userChoice === 'Clear Workspace Context') {
+					context.workspaceState.update('packageWasmPath', undefined);
+					context.workspaceState.update('packageRpdPath', undefined);
+					return;
+				} else if (userChoice === 'Update Package Paths') {
+					const packageWasmPath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package Wasm file', ignoreFocusOut: true });
+					const packageRpdPath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package Rpd file', ignoreFocusOut: true });
+					// check if the paths are valid
+					const wasmPathisValid = packageWasmPath && fs.existsSync(packageWasmPath) && fs.lstatSync(packageWasmPath).isFile() && isFileExtensionValid(packageWasmPath, '.wasm');
+					const rpdPathisValid = packageRpdPath && fs.existsSync(packageRpdPath) && fs.lstatSync(packageRpdPath).isFile() && isFileExtensionValid(packageRpdPath, '.rpd');
+					if (!wasmPathisValid || !rpdPathisValid) {
+						// Paths are invalid, display an error message
+						vscode.window.showErrorMessage('Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.');
+						return;
 					}
-				);
+					context.workspaceState.update('packageWasmPath', packageWasmPath);
+					context.workspaceState.update('packageRpdPath', packageRpdPath);
+					// TODO prompt the user to choose an account to pay for the deployment
+					const payerAccount = await stokenetAccounts[0];
+					vscode.window.showInformationMessage(`Deploying package to stokenet from @path ${packageWasmPath}`);
+					// compose the deploy package transaction and send to gateway
+					deployPackage(payerAccount, packageWasmPath || '', packageRpdPath || '').then((reciept) => {
+						if (reciept && reciept.transaction && reciept.transaction.affected_global_entities) {
+							// Create a webview panel
+							const panel = vscode.window.createWebviewPanel(
+								'stokenetPackage',
+								'Stokenet Package',
+								vscode.ViewColumn.One,
+								{
+									enableScripts: true // Enable scripts in the webview
+								}
+							);
 
-				// Set the HTML content of the webview panel
-				panel.webview.html = `
+							// Set the HTML content of the webview panel
+							panel.webview.html = `
+								<html>
+								<body>
+									<h1>Stokenet Package Deployed Successfully!</h1>
+									<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
+									<button onclick="copyPackageAddress()">Copy Package Address</button>
+									<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>						
+									<script>
+										function copyPackageAddress() {
+											const packageAddress = document.getElementById('package-address').innerText;
+											navigator.clipboard.writeText(packageAddress);
+										}
+									</script>
+								</body>
+								</html>
+							`;
+						} else {
+							vscode.window.showErrorMessage('Error deploying package to stokenet');
+						}
+					});
+					return;
+				}
+			}
+			// If the paths are valid, update the workspace context
+			context.workspaceState.update('packageWasmPath', packageWasmPath);
+			context.workspaceState.update('packageRpdPath', packageRpdPath);
+			// TODO prompt the user to choose an account to pay for the deployment
+			const payerAccount = await stokenetAccounts[0];
+			vscode.window.showInformationMessage(`Deploying package to stokenet from @path ${packageWasmPath}`);
+			// compose the deploy package transaction and send to gateway
+			deployPackage(payerAccount, packageWasmPath || '', packageRpdPath || '').then((reciept) => {
+				if (reciept && reciept.transaction && reciept.transaction.affected_global_entities) {
+					// Create a webview panel
+					const panel = vscode.window.createWebviewPanel(
+						'stokenetPackage',
+						'Stokenet Package',
+						vscode.ViewColumn.One,
+						{
+							enableScripts: true // Enable scripts in the webview
+						}
+					);
+
+					// Set the HTML content of the webview panel
+					panel.webview.html = `
 					<html>
 					<body>
 						<h1>Stokenet Package Deployed Successfully!</h1>
@@ -525,8 +588,229 @@ export function activate(context: vscode.ExtensionContext) {
 					</body>
 					</html>
 				`;
+				} else {
+					vscode.window.showErrorMessage('Error deploying package to stokenet');
+				}
+			});
+			return;
+		} else {
+			// If the package path is already set, get it from the workspace context
+			const packageWasmPath = context.workspaceState.get<string>('packageWasmPath');
+			const packageRpdPath = context.workspaceState.get<string>('packageRpdPath');
+			// check if the path is valid if not display an error message
+			const wasmPathisValid = packageWasmPath && fs.existsSync(packageWasmPath) && fs.lstatSync(packageWasmPath).isFile() && isFileExtensionValid(packageWasmPath, '.wasm');
+			const rpdPathisValid = packageRpdPath && fs.existsSync(packageRpdPath) && fs.lstatSync(packageRpdPath).isFile() && isFileExtensionValid(packageRpdPath, '.rpd');
+			if (!wasmPathisValid || !rpdPathisValid) {
+				// Path is invalid, display an error message
+				vscode.window.showErrorMessage('Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.');
+				// Prompt the user to enter the path again or clear the workspace context
+				const userChoice = await vscode.window.showQuickPick(['Clear Workspace Context', 'Update Package Paths'], { placeHolder: 'Choose an option' });
+				if (userChoice === 'Clear Workspace Context') {
+					context.workspaceState.update('packageWasmPath', undefined);
+					context.workspaceState.update('packageRpdPath', undefined);
+					return;
+				} else if (userChoice === 'Update Package Paths') {
+					const packageWasmPath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package Wasm file', ignoreFocusOut: true });
+					const packageRpdPath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package Rpd file', ignoreFocusOut: true });
+					// check if the paths are valid
+					const wasmPathisValid = packageWasmPath && fs.existsSync(packageWasmPath) && fs.lstatSync(packageWasmPath).isFile() && isFileExtensionValid(packageWasmPath, '.wasm');
+					const rpdPathisValid = packageRpdPath && fs.existsSync(packageRpdPath) && fs.lstatSync(packageRpdPath).isFile() && isFileExtensionValid(packageRpdPath, '.rpd');
+					if (!wasmPathisValid || !rpdPathisValid) {
+						// Paths are invalid, display an error message
+						vscode.window.showErrorMessage('Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.');
+						return;
+					}
+					context.workspaceState.update('packageWasmPath', packageWasmPath);
+					context.workspaceState.update('packageRpdPath', packageRpdPath);
+					// TODO prompt the user to choose an account to pay for the deployment
+					const payerAccount = await stokenetAccounts[0];
+					vscode.window.showInformationMessage(`Deploying package to stokenet from @path ${packageWasmPath}`);
+					// compose the deploy package transaction and send to gateway
+					deployPackage(payerAccount, packageWasmPath || '', packageRpdPath || '').then((reciept) => {
+						if (reciept && reciept.transaction && reciept.transaction.affected_global_entities) {
+							// Create a webview panel
+							const panel = vscode.window.createWebviewPanel(
+								'stokenetPackage',
+								'Stokenet Package',
+								vscode.ViewColumn.One,
+								{
+									enableScripts: true // Enable scripts in the webview
+								}
+							);
+
+							// Set the HTML content of the webview panel
+							panel.webview.html = `
+								<html>
+								<body>
+									<h1>Stokenet Package Deployed Successfully!</h1>
+									<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
+									<button onclick="copyPackageAddress()">Copy Package Address</button>
+									<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>						
+									<script>
+										function copyPackageAddress() {
+											const packageAddress = document.getElementById('package-address').innerText;
+											navigator.clipboard.writeText(packageAddress);
+										}
+									</script>
+								</body>
+								</html>
+							`;
+						} else {
+							vscode.window.showErrorMessage('Error deploying package to stokenet');
+						}
+					});
+					return;
+				}
 			}
-		});
+			// If the paths are valid prompt the user to update the package path or continue with the existing path
+			const updatePaths = await vscode.window.showQuickPick(['Update Paths', 'Continue with Deployment'], { placeHolder: 'Choose an option' });
+			if (updatePaths === 'Update Paths') {
+				const packageWasmPath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package Wasm file', ignoreFocusOut: true });
+				const packageRpdPath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package Rpd file', ignoreFocusOut: true });
+				// check if the paths are valid
+				const wasmPathisValid = packageWasmPath && fs.existsSync(packageWasmPath) && fs.lstatSync(packageWasmPath).isFile() && isFileExtensionValid(packageWasmPath, '.wasm');
+				const rpdPathisValid = packageRpdPath && fs.existsSync(packageRpdPath) && fs.lstatSync(packageRpdPath).isFile() && isFileExtensionValid(packageRpdPath, '.rpd');
+				if (!wasmPathisValid || !rpdPathisValid) {
+					// Path is invalid, display an error message
+					vscode.window.showErrorMessage('Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.');
+					// Prompt the user to enter the path again or clear the workspace context
+					const userChoice = await vscode.window.showQuickPick(['Clear Workspace Context', 'Update Package Paths'], { placeHolder: 'Choose an option' });
+					if (userChoice === 'Clear Workspace Context') {
+						context.workspaceState.update('packageWasmPath', undefined);
+						context.workspaceState.update('packageRpdPath', undefined);
+						return;
+					} else if (userChoice === 'Update Package Paths') {
+						const packageWasmPath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package Wasm file', ignoreFocusOut: true });
+						const packageRpdPath = await vscode.window.showInputBox({ prompt: 'Enter the path to the package Rpd file', ignoreFocusOut: true });
+						// check if the paths are valid
+						const wasmPathisValid = packageWasmPath && fs.existsSync(packageWasmPath) && fs.lstatSync(packageWasmPath).isFile() && isFileExtensionValid(packageWasmPath, '.wasm');
+						const rpdPathisValid = packageRpdPath && fs.existsSync(packageRpdPath) && fs.lstatSync(packageRpdPath).isFile() && isFileExtensionValid(packageRpdPath, '.rpd');
+						if (!wasmPathisValid || !rpdPathisValid) {
+							// Paths are invalid, display an error message
+							vscode.window.showErrorMessage('Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.');
+							return;
+						}
+						context.workspaceState.update('packageWasmPath', packageWasmPath);
+						context.workspaceState.update('packageRpdPath', packageRpdPath);
+						// TODO prompt the user to choose an account to pay for the deployment
+						const payerAccount = await stokenetAccounts[0];
+						vscode.window.showInformationMessage(`Deploying package to stokenet from @path ${packageWasmPath}`);
+						// compose the deploy package transaction and send to gateway
+						deployPackage(payerAccount, packageWasmPath || '', packageRpdPath || '').then((reciept) => {
+							if (reciept && reciept.transaction && reciept.transaction.affected_global_entities) {
+								// Create a webview panel
+								const panel = vscode.window.createWebviewPanel(
+									'stokenetPackage',
+									'Stokenet Package',
+									vscode.ViewColumn.One,
+									{
+										enableScripts: true // Enable scripts in the webview
+									}
+								);
+
+								// Set the HTML content of the webview panel
+								panel.webview.html = `
+								<html>
+								<body>
+									<h1>Stokenet Package Deployed Successfully!</h1>
+									<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
+									<button onclick="copyPackageAddress()">Copy Package Address</button>
+									<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>						
+									<script>
+										function copyPackageAddress() {
+											const packageAddress = document.getElementById('package-address').innerText;
+											navigator.clipboard.writeText(packageAddress);
+										}
+									</script>
+								</body>
+								</html>
+							`;
+							} else {
+								vscode.window.showErrorMessage('Error deploying package to stokenet');
+							}
+						});
+						return;
+					}
+				}
+				// If the paths are valid, update the workspace context
+				context.workspaceState.update('packageWasmPath', packageWasmPath);
+				context.workspaceState.update('packageRpdPath', packageRpdPath);
+				// TODO prompt the user to choose an account to pay for the deployment
+				const payerAccount = await stokenetAccounts[0];
+				vscode.window.showInformationMessage(`Deploying package to stokenet from @path ${packageWasmPath}`);
+				// compose the deploy package transaction and send to gateway
+				deployPackage(payerAccount, packageWasmPath ?? '', packageRpdPath ?? '').then((reciept) => {
+					if (reciept && reciept.transaction && reciept.transaction.affected_global_entities) {
+						// Create a webview panel
+						const panel = vscode.window.createWebviewPanel(
+							'stokenetPackage',
+							'Stokenet Package',
+							vscode.ViewColumn.One,
+							{
+								enableScripts: true // Enable scripts in the webview
+							}
+						);
+						// Set the HTML content of the webview panel
+						panel.webview.html = `
+							<html>
+							<body>
+								<h1>Stokenet Package Deployed Successfully!</h1>
+								<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
+								<button onclick="copyPackageAddress()">Copy Package Address</button>
+								<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>                        
+								<script>
+									function copyPackageAddress() {
+										const packageAddress = document.getElementById('package-address').innerText;
+										navigator.clipboard.writeText(packageAddress);
+									}
+								</script>
+							</body>
+							</html>
+						`;
+					} else {
+						vscode.window.showErrorMessage('Error deploying package to stokenet');
+					}
+				});
+				return;
+			}
+			// continue deployment with the existing paths
+			const payerAccount = await stokenetAccounts[0];
+			vscode.window.showInformationMessage(`Deploying package to stokenet from @path ${packageWasmPath}`);
+			// compose the deploy package transaction and send to gateway
+			deployPackage(payerAccount, packageWasmPath ?? '', packageRpdPath ?? '').then((reciept) => {
+				if (reciept && reciept.transaction && reciept.transaction.affected_global_entities) {
+					// Create a webview panel
+					const panel = vscode.window.createWebviewPanel(
+						'stokenetPackage',
+						'Stokenet Package',
+						vscode.ViewColumn.One,
+						{
+							enableScripts: true // Enable scripts in the webview
+						}
+					);
+					// Set the HTML content of the webview panel
+					panel.webview.html = `
+							<html>
+							<body>
+								<h1>Stokenet Package Deployed Successfully!</h1>
+								<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
+								<button onclick="copyPackageAddress()">Copy Package Address</button>
+								<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>                        
+								<script>
+									function copyPackageAddress() {
+										const packageAddress = document.getElementById('package-address').innerText;
+										navigator.clipboard.writeText(packageAddress);
+									}
+								</script>
+							</body>
+							</html>
+						`;
+				} else {
+					vscode.window.showErrorMessage('Error deploying package to stokenet');
+				}
+			});
+			return;
+		}
 	}));
 
 	// context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', async () => {

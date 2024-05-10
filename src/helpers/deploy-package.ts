@@ -27,7 +27,7 @@ type accountObject = {
     privateKey: string,
     publicKey: string,
 };
-
+// TODO return error if the transaction fails
 export async function deployPackage(payerAccount: accountObject, packageWasmPath: string, packageRpdPath: string) {
     const packageWasmBuffer = fs.readFileSync(packageWasmPath);
     const packageRpdBuffer = fs.readFileSync(packageRpdPath);
