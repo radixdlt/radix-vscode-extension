@@ -2,12 +2,17 @@
 Radix DLT Visual Studio Code Extension
 
 ## Features
-- Radix Transaction Manifest Language (RTML) syntax highlighting
-- Radix Transaction Manifest Language (RTML) snippets
+- Radix Transaction Manifest Language (RTM) syntax highlighting
+- Radix Transaction Manifest Language (RTM) snippets
 - Scrypto Snippets
 - New Scrypto Package creation
 - New Radix dApp creation
 - Radix Engine Simulator (RESIM) integration
+- Create new Stokenet Accounts
+- AirDrop Test XRD Tokens
+- Deploy to Stokenet
+- Quick link to Stokenet Dashboard
+- Quick link to Stokenet Dev Console
 
 ## Requirements
 - Visual Studio Code

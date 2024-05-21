@@ -152,20 +152,26 @@
 	"Withdraw from Account": {
 		"scope": "scope.rtm",
 		"prefix": "WITHDRAW_FROM_ACCOUNT",
-		"body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw\" ResourceAddress(\"${2:Resource to Withdraw}\");",
+		"body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw\" Address(\"${2:Resource to Withdraw}\") Decimal(\"${3:Amount}\"));",
 		"description": "Withdraws funds from an account."
 	},
-	"Withdraw from Account by Amount": {
+	"Withdraw Non Fungibles from Account by Ids": {
 		"scope": "scope.rtm",
-		"prefix": "WITHDRAW_FROM_ACCOUNT_BY_AMOUNT",
-		"body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw_by_amount\" Decimal(\"${2:Amount}\") ResourceAddress(\"${3:Resource to Withdraw}\");",
+		"prefix": "WITHDRAW_NON_FUNGIBLES_FROM_ACCOUNT",
+		"body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw_non_fungibles\" Address(\"${2:Resource to Withdraw}\") Array<NonFungibleLocalId>(NonFungibleLocalId(\"${3:id}\"));",
 		"description": "Withdraws funds from an account."
 	},
-	"Withdraw from Account by Ids": {
+	"Create Proof of Amount from Account": {
 		"scope": "scope.rtm",
-		"prefix": "WITHDRAW_FROM_ACCOUNT_BY_IDS",
-		"body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw_by_ids\" Set<NonFungibleId>(NonFungibleId(\"${2:id}\")) ResourceAddress(\"${3:Resource to Withdraw}\");",
-		"description": "Withdraws funds from an account."
+		"prefix": "CREATE_PROOF_OF_AMOUNT_FROM_ACCOUNT",
+		"body": "CALL_METHOD Address(\"${1:account_component_address}\") \"create_proof_of_amount\" Address(\"${2:resource_address}\") Decimal(\"${3:amount}\");",
+		"description": "Creates a proof from an account."
+	},
+	"Create Proof of Non Fungibles from Account": {
+		"scope": "scope.rtm",
+		"prefix": "CREATE_PROOF_OF_NON_FUNGIBLES_FROM_ACCOUNT",
+		"body": "CALL_METHOD Address(\"${1:account_component_address}\") \"create_proof_of_non_fungibles\" Address(\"${2:resource_address}\") Array<NonFungibleLocalId>(NonFungibleLocalId(\"${3:some_non_fungible_local_id}\"));",
+		"description": "Creates a proof of non fungibles from an account."
 	},
 	// =============
 	// Common Types
