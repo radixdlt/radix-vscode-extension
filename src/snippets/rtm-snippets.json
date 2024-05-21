@@ -152,20 +152,26 @@
 	"Withdraw from Account": {
 		"scope": "scope.rtm",
 		"prefix": "WITHDRAW_FROM_ACCOUNT",
-		"body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw\" Address(\"${2:Resource to Withdraw}\");",
+		"body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw\" Address(\"${2:Resource to Withdraw}\") Decimal(\"${3:Amount}\"));",
 		"description": "Withdraws funds from an account."
 	},
-	"Withdraw from Account by Amount": {
+	"Withdraw Non Fungibles from Account by Ids": {
 		"scope": "scope.rtm",
-		"prefix": "WITHDRAW_FROM_ACCOUNT_BY_AMOUNT",
-		"body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw_by_amount\" Decimal(\"${2:Amount}\") Address(\"${3:Resource to Withdraw}\");",
+		"prefix": "WITHDRAW_NON_FUNGIBLES_FROM_ACCOUNT",
+		"body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw_non_fungibles\" Address(\"${2:Resource to Withdraw}\") Array<NonFungibleLocalId>(NonFungibleLocalId(\"${3:id}\"));",
 		"description": "Withdraws funds from an account."
 	},
-	"Withdraw from Account by Ids": {
+	"Create Proof From Account": {
 		"scope": "scope.rtm",
-		"prefix": "WITHDRAW_FROM_ACCOUNT_BY_IDS",
-		"body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw_by_ids\" Set<NonFungibleId>(NonFungibleId(\"${2:id}\")) Address(\"${3:Resource to Withdraw}\");",
-		"description": "Withdraws funds from an account."
+		"prefix": "CREATE_PROOF_FROM_ACCOUNT",
+		"body": "CALL_METHOD Address(\"${account_component_address}\") \"create_proof_of_amount\" Address(\"${resource_address}\") Decimal(\"${amount}\");",
+		"description": "Creates a proof from an account."
+	},
+	"Create Proof of Non Fungibles From Account": {
+		"scope": "scope.rtm",
+		"prefix": "CREATE_PROOF_OF_NON_FUNGIBLES_FROM_ACCOUNT",
+		"body": "CALL_METHOD Address(\"${account_component_address}\") \"create_proof_of_non_fungibles\" Address(\"${resource_address}\") Array<NonFungibleLocalId>(NonFungibleLocalId(\"${some_non_fungible_local_id}\"));",
+		"description": "Creates a proof from an account."
 	},
 	// =============
 	// Common Types
