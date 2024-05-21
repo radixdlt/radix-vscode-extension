@@ -19,3 +19,4 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
     - Deploy to Stokenet
     - Quick link to Stokenet Dashboard
     - Quick link to Stokenet Dev Console
+    - Update RTM Account and Proof Snippets
