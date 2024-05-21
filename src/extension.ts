@@ -9,6 +9,26 @@ import * as fs from 'fs';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+	if (vscode.env.isTelemetryEnabled) {
+		// DAU telemetry for GA4
+		const measurement_id = `G-P4R93X3GNW`;
+		const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+		fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+			method: "POST",
+			body: JSON.stringify({
+				client_id: vscode.env.machineId,
+				events: [{
+					name: 'extension_activated',
+					params: {
+						category: 'extension',
+						value: 'activated',
+						session_id: vscode.env.sessionId
+					}
+				}]
+			})
+		});
+	}
 	let disposable = vscode.commands.registerCommand('radix-developer-tools.helloScrypto', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
@@ -158,6 +178,25 @@ export function activate(context: vscode.ExtensionContext) {
 			terminal.sendText(`scrypto new-package ${packageName}`);
 			terminal.show();
 		}
+		if (vscode.env.isTelemetryEnabled) {
+			// telemetry for GA4
+			const measurement_id = `G-P4R93X3GNW`;
+			const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+				method: "POST",
+				body: JSON.stringify({
+					client_id: vscode.env.machineId,
+					events: [{
+						name: 'new_scrypto_package',
+						params: {
+							category: 'extension',
+							value: 'scrypto_package_created',
+						}
+					}]
+				})
+			});
+		}
 	}));
 
 	// ######### Create Radix Dapp Command #########
@@ -165,6 +204,25 @@ export function activate(context: vscode.ExtensionContext) {
 		const terminal = vscode.window.createTerminal(`Radix-Dapp`);
 		terminal.sendText("npx create-radix-dapp");
 		terminal.show();
+		if (vscode.env.isTelemetryEnabled) {
+			// telemetry for GA4
+			const measurement_id = `G-P4R93X3GNW`;
+			const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+				method: "POST",
+				body: JSON.stringify({
+					client_id: vscode.env.machineId,
+					events: [{
+						name: 'new_radix_dapp',
+						params: {
+							category: 'extension',
+							value: 'dapp_created',
+						}
+					}]
+				})
+			});
+		}
 	}));
 
 
@@ -186,6 +244,25 @@ export function activate(context: vscode.ExtensionContext) {
 			terminal.sendText("resim new-account");
 			terminal.show();
 		}
+		if (vscode.env.isTelemetryEnabled) {
+			// telemetry for GA4
+			const measurement_id = `G-P4R93X3GNW`;
+			const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+				method: "POST",
+				body: JSON.stringify({
+					client_id: vscode.env.machineId,
+					events: [{
+						name: 'resim_new_account',
+						params: {
+							category: 'resim',
+							value: 'new_resim_account_created',
+						}
+					}]
+				})
+			});
+		}
 	}));
 
 	// Resim Reset Command
@@ -204,6 +281,25 @@ export function activate(context: vscode.ExtensionContext) {
 			const terminal = vscode.window.createTerminal(`Resim`);
 			terminal.sendText("resim reset");
 			terminal.show();
+		}
+		if (vscode.env.isTelemetryEnabled) {
+			// telemetry for GA4
+			const measurement_id = `G-P4R93X3GNW`;
+			const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+				method: "POST",
+				body: JSON.stringify({
+					client_id: vscode.env.machineId,
+					events: [{
+						name: 'resim_reset',
+						params: {
+							category: 'resim',
+							value: 'resim_reset',
+						}
+					}]
+				})
+			});
 		}
 	}));
 
@@ -294,6 +390,25 @@ export function activate(context: vscode.ExtensionContext) {
 			const terminal = vscode.window.createTerminal(`Publish Package`);
 			terminal.sendText(`resim publish .`);
 			terminal.show();
+		}
+		if (vscode.env.isTelemetryEnabled) {
+			// telemetry for GA4
+			const measurement_id = `G-P4R93X3GNW`;
+			const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+				method: "POST",
+				body: JSON.stringify({
+					client_id: vscode.env.machineId,
+					events: [{
+						name: 'resim_publish_package',
+						params: {
+							category: 'resim',
+							value: 'resim_package_published',
+						}
+					}]
+				})
+			});
 		}
 	}));
 
@@ -465,6 +580,25 @@ export function activate(context: vscode.ExtensionContext) {
 				panel.webview.html = getWebviewContent(accountName, virtualAccount, mnemonic, privateKey, publicKey);
 			});
 		}
+		if (vscode.env.isTelemetryEnabled) {
+			// telemetry for GA4
+			const measurement_id = `G-P4R93X3GNW`;
+			const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+				method: "POST",
+				body: JSON.stringify({
+					client_id: vscode.env.machineId,
+					events: [{
+						name: 'stokenet_new_account',
+						params: {
+							category: 'stokenet',
+							value: 'new_stokenet_account_created',
+						}
+					}]
+				})
+			});
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.faucet', async () => {
@@ -475,6 +609,25 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage(`Sending XRD to account: ${accountAddress}`);
 		}
 		// TODO show account entity details from gateway
+		if (vscode.env.isTelemetryEnabled) {
+			// telemetry for GA4
+			const measurement_id = `G-P4R93X3GNW`;
+			const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+				method: "POST",
+				body: JSON.stringify({
+					client_id: vscode.env.machineId,
+					events: [{
+						name: 'stokenet_airdrop_xrd',
+						params: {
+							category: 'stokenet',
+							value: 'xrd_airdropped',
+						}
+					}]
+				})
+			});
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.deploy-package', async () => {
@@ -821,6 +974,25 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 		}
+		if (vscode.env.isTelemetryEnabled) {
+			// telemetry for GA4
+			const measurement_id = `G-P4R93X3GNW`;
+			const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+				method: "POST",
+				body: JSON.stringify({
+					client_id: vscode.env.machineId,
+					events: [{
+						name: 'stokenet_deploy_package',
+						params: {
+							category: 'stokenet',
+							value: 'stokenet_package_deployed',
+						}
+					}]
+				})
+			});
+		}
 	}));
 
 	// context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', async () => {
@@ -829,10 +1001,48 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.dashboard', async () => {
 		vscode.env.openExternal(vscode.Uri.parse('https://stokenet-dashboard.radixdlt.com'));
+		if (vscode.env.isTelemetryEnabled) {
+			// telemetry for GA4
+			const measurement_id = `G-P4R93X3GNW`;
+			const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+				method: "POST",
+				body: JSON.stringify({
+					client_id: vscode.env.machineId,
+					events: [{
+						name: 'stokenet_dashboard',
+						params: {
+							category: 'stokenet',
+							value: 'stokenet_dashboard_opened',
+						}
+					}]
+				})
+			});
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('stokenet.console', async () => {
 		vscode.env.openExternal(vscode.Uri.parse('https://stokenet-console.radixdlt.com'));
+		if (vscode.env.isTelemetryEnabled) {
+			// telemetry for GA4
+			const measurement_id = `G-P4R93X3GNW`;
+			const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+				method: "POST",
+				body: JSON.stringify({
+					client_id: vscode.env.machineId,
+					events: [{
+						name: 'stokenet_console',
+						params: {
+							category: 'stokenet',
+							value: 'stokenet_console_opened',
+						}
+					}]
+				})
+			});
+		}
 	}));
 
 	// Remove Account Command
@@ -877,6 +1087,25 @@ export function activate(context: vscode.ExtensionContext) {
 			panel.webview.html = getWebviewContent(selectedAccount.accountName, selectedAccount.virtualAccount, selectedAccount.mnemonic, selectedAccount.privateKey, selectedAccount.publicKey);
 		} else {
 			vscode.window.showErrorMessage('Account not found');
+		}
+		if (vscode.env.isTelemetryEnabled) {
+			// telemetry for GA4
+			const measurement_id = `G-P4R93X3GNW`;
+			const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
+				method: "POST",
+				body: JSON.stringify({
+					client_id: vscode.env.machineId,
+					events: [{
+						name: 'stokenet_account_detail',
+						params: {
+							category: 'stokenet',
+							value: 'stokenet_account_detail_viewed',
+						}
+					}]
+				})
+			});
 		}
 	}));
 
