@@ -5,15 +5,14 @@ import * as path from 'path';
 import { createAccount, airdropXRD } from "./helpers/create-account";
 import { deployPackage } from "./helpers/deploy-package";
 import * as fs from 'fs';
-
+// Google Analytics Measurement ID and API Secret Note* this is just the identifier for the GA4 Property & Stream
+const measurement_id = `G-P4R93X3GNW`;
+const api_secret = `90g48uuQQx29pHti8M00iw`;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	if (vscode.env.isTelemetryEnabled) {
 		// DAU telemetry for GA4
-		const measurement_id = `G-P4R93X3GNW`;
-		const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 		fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 			method: "POST",
 			body: JSON.stringify({
@@ -181,9 +180,6 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		if (vscode.env.isTelemetryEnabled) {
 			// telemetry for GA4
-			const measurement_id = `G-P4R93X3GNW`;
-			const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 				method: "POST",
 				body: JSON.stringify({
@@ -207,9 +203,6 @@ export function activate(context: vscode.ExtensionContext) {
 		terminal.show();
 		if (vscode.env.isTelemetryEnabled) {
 			// telemetry for GA4
-			const measurement_id = `G-P4R93X3GNW`;
-			const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 				method: "POST",
 				body: JSON.stringify({
@@ -247,9 +240,6 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		if (vscode.env.isTelemetryEnabled) {
 			// telemetry for GA4
-			const measurement_id = `G-P4R93X3GNW`;
-			const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 				method: "POST",
 				body: JSON.stringify({
@@ -285,9 +275,6 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		if (vscode.env.isTelemetryEnabled) {
 			// telemetry for GA4
-			const measurement_id = `G-P4R93X3GNW`;
-			const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 				method: "POST",
 				body: JSON.stringify({
@@ -394,9 +381,6 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		if (vscode.env.isTelemetryEnabled) {
 			// telemetry for GA4
-			const measurement_id = `G-P4R93X3GNW`;
-			const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 				method: "POST",
 				body: JSON.stringify({
@@ -583,9 +567,6 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		if (vscode.env.isTelemetryEnabled) {
 			// telemetry for GA4
-			const measurement_id = `G-P4R93X3GNW`;
-			const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 				method: "POST",
 				body: JSON.stringify({
@@ -612,9 +593,6 @@ export function activate(context: vscode.ExtensionContext) {
 		// TODO show account entity details from gateway
 		if (vscode.env.isTelemetryEnabled) {
 			// telemetry for GA4
-			const measurement_id = `G-P4R93X3GNW`;
-			const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 				method: "POST",
 				body: JSON.stringify({
@@ -977,9 +955,6 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		if (vscode.env.isTelemetryEnabled) {
 			// telemetry for GA4
-			const measurement_id = `G-P4R93X3GNW`;
-			const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 				method: "POST",
 				body: JSON.stringify({
@@ -1004,9 +979,6 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.env.openExternal(vscode.Uri.parse('https://stokenet-dashboard.radixdlt.com'));
 		if (vscode.env.isTelemetryEnabled) {
 			// telemetry for GA4
-			const measurement_id = `G-P4R93X3GNW`;
-			const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 				method: "POST",
 				body: JSON.stringify({
@@ -1027,9 +999,6 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.env.openExternal(vscode.Uri.parse('https://stokenet-console.radixdlt.com'));
 		if (vscode.env.isTelemetryEnabled) {
 			// telemetry for GA4
-			const measurement_id = `G-P4R93X3GNW`;
-			const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 				method: "POST",
 				body: JSON.stringify({
@@ -1092,9 +1061,6 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		if (vscode.env.isTelemetryEnabled) {
 			// telemetry for GA4
-			const measurement_id = `G-P4R93X3GNW`;
-			const api_secret = `90g48uuQQx29pHti8M00iw`;
-
 			fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`, {
 				method: "POST",
 				body: JSON.stringify({
