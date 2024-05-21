@@ -146,9 +146,10 @@ export function activate(context: vscode.ExtensionContext) {
 		// { label: 'Instantiate Blueprint', icon: ledger_icon, command: { command: 'stokenet.instantiate-blueprint', title: 'Instantiate Blueprint', arguments: [] } },
 		{ label: 'Open Dashboard', icon: dashboard_icon, command: { command: 'stokenet.dashboard', title: 'Open Dashboard', arguments: [] } },
 		{ label: 'Open Dev Console', icon: console_icon, command: { command: 'stokenet.console', title: 'Open Console', arguments: [] } },
+	];
+	let stokenetAccountsList: { label: string, icon: vscode.ThemeIcon, command: { command: string, title: string, arguments: string[] } }[] = [
 		{ label: 'Remove Account', icon: trash, command: { command: 'stokenet.remove-account', title: 'Remove Account', arguments: [] } },
 	];
-	let stokenetAccountsList: { label: string, icon: vscode.ThemeIcon, command: { command: string, title: string, arguments: string[] } }[] = [];
 	let stokenetAccounts: { accountName: string, virtualAccount: string, mnemonic: string, privateKey: string, publicKey: string }[] = [];
 	stokenetAccounts = context.globalState.get('stokenet-accounts') || [];
 	// set stokenet accounts list from the global context
@@ -1064,6 +1065,7 @@ export function activate(context: vscode.ExtensionContext) {
 			await context.globalState.update('stokenet-accounts', stokenetAccounts);
 			// Remove the Item and Refresh the tree view
 			stokenetAccountsTreeDataProvider.removeItem(accountToRemove.label);
+			vscode.window.showInformationMessage(`${accountToRemove.label} successfully removed from accounts list. NOTE: This account still exists on Stokenet`);
 		}
 	}));
 
