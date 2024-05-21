@@ -35,6 +35,8 @@ export async function createAccount() {
     const mnemonicToSeed = ok(bip39.mnemonicToSeedSync(mnemonic).toString('hex'));
 
     // const DERIVATION_PATH = `m/44'/1022'/${networkId}'/${ENTITY_TYPE.ACCOUNT}'/${KEY_TYPE.TRANSACTION_SIGNING}'/${ENTITY_INDEX}'`
+    // the derivation path must be set to the following value to derive the correct key for the virtual account address for each network
+    // for example here the /2' is the networkId for stokenet and /525' is the entity type for account
     const derivationPath = "m/44'/1022'/2'/525'/1460'/1'";
     const deriveChildKey = ok(derivePath(derivationPath, mnemonicToSeed.value));
     const privateKey = await deriveChildKey.value.key.toString('hex');
