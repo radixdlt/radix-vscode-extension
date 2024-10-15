@@ -26,8 +26,21 @@
       {
         "command": "radix-developer-tools.helloScrypto",
         "title": "Hello Scrypto"
+      },
+      {
+        "command": "stokenet.submit-transaction",
+        "title": "Submit Transaction"
       }
     ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "resourceExtname == '.rtm'",
+          "command": "stokenet.submit-transaction",
+          "group": "navigation"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "radixTransactionManifest",

@@ -5,6 +5,7 @@ import * as path from 'path';
 import { createAccount, airdropXRD } from "./helpers/create-account";
 import { deployPackage } from "./helpers/deploy-package";
 import * as fs from 'fs';
+import { submitTransaction } from './helpers/submit-transaction';
 // Google Analytics Measurement ID and API Secret Note* this is just the identifier for the GA4 Property & Stream
 const measurement_id = `G-P4R93X3GNW`;
 const api_secret = `90g48uuQQx29pHti8M00iw`;
@@ -33,6 +34,43 @@ export function activate(context: vscode.ExtensionContext) {
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello from Radix Developer Tools!');
 	});
+
+	let submitTxCommandDisposable = vscode.commands.registerCommand(
+    "stokenet.submit-transaction",
+    async (a) => {
+      const path = a.path;
+      // Get the stokenetAccounts array from the global context
+      stokenetAccounts =
+        (await context.globalState.get("stokenet-accounts")) || [];
+      // Prompt the user to select the account they want to remove
+      const accountToSubmitWith = await vscode.window.showQuickPick(
+        stokenetAccounts.map((account) => ({
+          label: account.accountName,
+          description: account.virtualAccount,
+        })),
+        {
+          placeHolder: "Select the account you want to sign transaction with",
+        }
+      );
+
+      const fullAccountInformation = stokenetAccounts.find(
+        (account) => account.accountName === accountToSubmitWith?.label
+      );
+
+      if (accountToSubmitWith && fullAccountInformation) {
+        const result = await submitTransaction(fullAccountInformation, path);
+
+        let copyAction = "Copy Transaction Intent Hash";
+        vscode.window
+          .showInformationMessage(`Transaction Submitted`, copyAction)
+          .then((selection) => {
+            if (selection === copyAction) {
+              vscode.env.clipboard.writeText(result);
+            }
+          });
+      }
+    }
+  );
 
 	class ScryptoTreeDataProvider implements vscode.TreeDataProvider<string> {
 		private _onDidChangeTreeData: vscode.EventEmitter<string | undefined | null | void> = new vscode.EventEmitter<string | undefined | null | void>();
@@ -1079,6 +1117,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Add tree views to the extension context
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(submitTxCommandDisposable);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('create-new-project', templateTreeDataProvider));
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('resim-commands', resimTreeDataProvider));
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('stokenet-commands', stokenetTreeDataProvider));
