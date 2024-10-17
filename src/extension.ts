@@ -12,7 +12,11 @@ import { AnalyticsModule } from "./modules/analytics-module";
 import { ScryptoTreeDataProvider } from "./helpers/scrypto-tree-data-provider";
 import { getStokenetAccountWebView } from "./webviews/stokenet-account";
 import { submitTransaction } from "./helpers/submit-transaction";
-import { Account, StokenetAccountsModule } from "./modules/stokenet-accounts-module";
+import {
+  Account,
+  StokenetAccountsModule,
+} from "./modules/stokenet-accounts-module";
+import { ResimModule } from "./modules/resim-module";
 
 const analytics = AnalyticsModule();
 
@@ -37,7 +41,10 @@ export function activate(context: vscode.ExtensionContext) {
   const fungible_token_behaviors_icon = new vscode.ThemeIcon("symbol-misc");
   const dashboard_icon = new vscode.ThemeIcon("dashboard");
   const console_icon = new vscode.ThemeIcon("preview");
+
+  const resimModule = ResimModule();
   const stokenetAccountsModule = StokenetAccountsModule({ context });
+
   // Tree View Items
   const templates = [
     {
@@ -246,21 +253,7 @@ export function activate(context: vscode.ExtensionContext) {
   // Resim New Account Command
   context.subscriptions.push(
     vscode.commands.registerCommand("resim.new-account", () => {
-      // check if there is a resim terminal open already
-      let isResimTerminalOpen = false;
-      vscode.window.terminals.forEach((terminal) => {
-        if (terminal.name === "Resim") {
-          terminal.sendText("resim new-account");
-          terminal.show();
-          isResimTerminalOpen = true;
-          return;
-        }
-      });
-      if (!isResimTerminalOpen) {
-        const terminal = vscode.window.createTerminal(`Resim`);
-        terminal.sendText("resim new-account");
-        terminal.show();
-      }
+      resimModule.sendTextAndFocus("resim new-account");
       analytics.resim.event("resim_new_account");
     }),
   );
@@ -268,21 +261,7 @@ export function activate(context: vscode.ExtensionContext) {
   // Resim Reset Command
   context.subscriptions.push(
     vscode.commands.registerCommand("resim.reset", () => {
-      // check if there is a resim terminal open already
-      let isResimTerminalOpen = false;
-      vscode.window.terminals.forEach((terminal) => {
-        if (terminal.name === "Resim") {
-          terminal.sendText("resim reset");
-          terminal.show();
-          isResimTerminalOpen = true;
-          return;
-        }
-      });
-      if (!isResimTerminalOpen) {
-        const terminal = vscode.window.createTerminal(`Resim`);
-        terminal.sendText("resim reset");
-        terminal.show();
-      }
+      resimModule.sendTextAndFocus("resim reset");
       analytics.resim.event("resim_reset");
     }),
   );
@@ -290,42 +269,14 @@ export function activate(context: vscode.ExtensionContext) {
   // Resim Show Configs Command
   context.subscriptions.push(
     vscode.commands.registerCommand("resim.show-configs", () => {
-      // check if there is a resim terminal open already
-      let isResimTerminalOpen = false;
-      vscode.window.terminals.forEach((terminal) => {
-        if (terminal.name === "Resim") {
-          terminal.sendText("resim show-configs");
-          terminal.show();
-          isResimTerminalOpen = true;
-          return;
-        }
-      });
-      if (!isResimTerminalOpen) {
-        const terminal = vscode.window.createTerminal(`Resim`);
-        terminal.sendText("resim show-configs");
-        terminal.show();
-      }
+      resimModule.sendTextAndFocus("resim show-configs");
     }),
   );
 
   // Resim Show Ledger Command
   context.subscriptions.push(
     vscode.commands.registerCommand("resim.show-ledger", () => {
-      // check if there is a resim terminal open already
-      let isResimTerminalOpen = false;
-      vscode.window.terminals.forEach((terminal) => {
-        if (terminal.name === "Resim") {
-          terminal.sendText("resim show-ledger");
-          terminal.show();
-          isResimTerminalOpen = true;
-          return;
-        }
-      });
-      if (!isResimTerminalOpen) {
-        const terminal = vscode.window.createTerminal(`Resim`);
-        terminal.sendText("resim show-ledger");
-        terminal.show();
-      }
+      resimModule.sendTextAndFocus("resim show-ledger");
     }),
   );
 
@@ -340,22 +291,7 @@ export function activate(context: vscode.ExtensionContext) {
       if (resourceAddress && amount && recipientAccount) {
         const command = `resim transfer ${resourceAddress}:${amount} ${recipientAccount}`;
 
-        // check if there is a resim terminal open already
-        let isResimTerminalOpen = false;
-        vscode.window.terminals.forEach((terminal) => {
-          if (terminal.name === "Resim") {
-            // Use the command here
-            terminal.sendText(command);
-            terminal.show();
-            isResimTerminalOpen = true;
-            return;
-          }
-        });
-        if (!isResimTerminalOpen) {
-          const terminal = vscode.window.createTerminal(`Resim`);
-          terminal.sendText(command);
-          terminal.show();
-        }
+        resimModule.sendTextAndFocus(command);
       } else {
         vscode.window.showErrorMessage(
           "You must provide a resource address, amount, and recipient account",
@@ -390,23 +326,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       if (amount) {
         const command = `resim new-token-fixed ${amount}`;
-
-        // check if there is a resim terminal open already
-        let isResimTerminalOpen = false;
-        vscode.window.terminals.forEach((terminal) => {
-          if (terminal.name === "Resim") {
-            // Use the command here
-            terminal.sendText(command);
-            terminal.show();
-            isResimTerminalOpen = true;
-            return;
-          }
-        });
-        if (!isResimTerminalOpen) {
-          const terminal = vscode.window.createTerminal(`Resim`);
-          terminal.sendText(command);
-          terminal.show();
-        }
+        resimModule.sendTextAndFocus(command);
       } else {
         vscode.window.showErrorMessage(
           "You must provide an amount of tokens to create",
@@ -427,23 +347,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       if (packageAddress && blueprintName && functionName) {
         const command = `resim call-function ${packageAddress} ${blueprintName} ${functionName} ${args}`;
-
-        // check if there is a resim terminal open already
-        let isResimTerminalOpen = false;
-        vscode.window.terminals.forEach((terminal) => {
-          if (terminal.name === "Resim") {
-            // Use the command here
-            terminal.sendText(command);
-            terminal.show();
-            isResimTerminalOpen = true;
-            return;
-          }
-        });
-        if (!isResimTerminalOpen) {
-          const terminal = vscode.window.createTerminal(`Resim`);
-          terminal.sendText(command);
-          terminal.show();
-        }
+        resimModule.sendTextAndFocus(command);
       } else {
         vscode.window.showErrorMessage(
           "You must provide a package address, blueprint name, function name and any required arguments",
@@ -462,23 +366,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       if (componentAddress && methodName) {
         const command = `resim call-method ${componentAddress} ${methodName} ${args}`;
-
-        // check if there is a resim terminal open already
-        let isResimTerminalOpen = false;
-        vscode.window.terminals.forEach((terminal) => {
-          if (terminal.name === "Resim") {
-            // Use the command here
-            terminal.sendText(command);
-            terminal.show();
-            isResimTerminalOpen = true;
-            return;
-          }
-        });
-        if (!isResimTerminalOpen) {
-          const terminal = vscode.window.createTerminal(`Resim`);
-          terminal.sendText(command);
-          terminal.show();
-        }
+        resimModule.sendTextAndFocus(command);
       } else {
         vscode.window.showErrorMessage(
           "You must provide a component address, method name, and any required arguments",
@@ -492,23 +380,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("resim.create-nft-badge", async () => {
       const command = `resim new-simple-badge`;
-
-      // check if there is a resim terminal open already
-      let isResimTerminalOpen = false;
-      vscode.window.terminals.forEach((terminal) => {
-        if (terminal.name === "Resim") {
-          // Use the command here
-          terminal.sendText(command);
-          terminal.show();
-          isResimTerminalOpen = true;
-          return;
-        }
-      });
-      if (!isResimTerminalOpen) {
-        const terminal = vscode.window.createTerminal(`Resim`);
-        terminal.sendText(command);
-        terminal.show();
-      }
+      resimModule.sendTextAndFocus(command);
     }),
   );
 
@@ -519,23 +391,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("resim.new-token-behaviors", async () => {
       // Test with simple manifest first
       const command = `resim run ${__dirname}/assets/manifests/token_behaviors.rtm`;
-
-      // check if there is a resim terminal open already
-      let isResimTerminalOpen = false;
-      vscode.window.terminals.forEach((terminal) => {
-        if (terminal.name === "Resim") {
-          // Use the command here
-          terminal.sendText(command);
-          terminal.show();
-          isResimTerminalOpen = true;
-          return;
-        }
-      });
-      if (!isResimTerminalOpen) {
-        const terminal = vscode.window.createTerminal(`Resim`);
-        terminal.sendText(command);
-        terminal.show();
-      }
+      resimModule.sendTextAndFocus(command);
     }),
   );
 
@@ -925,23 +781,8 @@ export function activate(context: vscode.ExtensionContext) {
       const path = (a && a.path) || (await prompts.rtmPath());
 
       if (path) {
-        // check if there is a resim terminal open already
-        let isResimTerminalOpen = false;
         const command = `resim run ${path}`;
-        vscode.window.terminals.forEach((terminal) => {
-          if (terminal.name === "Resim") {
-            // Use the command here
-            terminal.sendText(command);
-            terminal.show();
-            isResimTerminalOpen = true;
-            return;
-          }
-        });
-        if (!isResimTerminalOpen) {
-          const terminal = vscode.window.createTerminal(`Resim`);
-          terminal.sendText(command);
-          terminal.show();
-        }
+        resimModule.sendTextAndFocus(command);
       }
     }),
   );

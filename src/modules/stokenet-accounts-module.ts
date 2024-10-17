@@ -20,6 +20,16 @@ export type Account = {
   privateKey: string;
 };
 
+const removeStokenetAccountItem = {
+  label: "Remove Account",
+  icon: new vscode.ThemeIcon("trash"),
+  command: {
+    command: "stokenet.remove-account",
+    title: "Remove Account",
+    arguments: [],
+  },
+};
+
 export const StokenetAccountsModule = ({
   context,
 }: {
@@ -41,15 +51,7 @@ export const StokenetAccountsModule = ({
   };
 
   const stokenetAccountsList = [
-    {
-      label: "Remove Account",
-      icon: new vscode.ThemeIcon("trash"),
-      command: {
-        command: "stokenet.remove-account",
-        title: "Remove Account",
-        arguments: [],
-      },
-    },
+    removeStokenetAccountItem,
     ...getAccountsAsScryptoTreeItems(),
   ];
 
@@ -86,7 +88,7 @@ export const StokenetAccountsModule = ({
     // for example here the /2' is the networkId for stokenet and /525' is the entity type for account
     const derivationPath = "m/44'/1022'/2'/525'/1460'/1'";
     const deriveChildKey = derivePath(derivationPath, mnemonicToSeed);
-    const privateKey = await deriveChildKey.key.toString("hex");
+    const privateKey = deriveChildKey.key.toString("hex");
     const publicKey = getPublicKey(deriveChildKey.key, false).toString("hex");
     // construct RET public key
     const pubKey = new PublicKey.Ed25519(publicKey);
