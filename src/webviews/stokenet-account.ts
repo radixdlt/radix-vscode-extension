@@ -1,4 +1,4 @@
-import { Account } from "../helpers/stokenet-accounts";
+import { Account } from "../modules/stokenet-accounts-module";
 
 export function getStokenetAccountWebView(account: Account) {
   const { label, address, mnemonic, privateKey, publicKey } = account;

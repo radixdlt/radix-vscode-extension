@@ -8,11 +8,11 @@ import {
   handlePackageDeploymentResponse,
 } from "./helpers/deploy-package";
 import * as fs from "fs";
-import { AnalyticsModule } from "./helpers/analytics-module";
+import { AnalyticsModule } from "./modules/analytics-module";
 import { ScryptoTreeDataProvider } from "./helpers/scrypto-tree-data-provider";
 import { getStokenetAccountWebView } from "./webviews/stokenet-account";
 import { submitTransaction } from "./helpers/submit-transaction";
-import { Account, StokenetAccountsModule } from "./helpers/stokenet-accounts";
+import { Account, StokenetAccountsModule } from "./modules/stokenet-accounts-module";
 
 const analytics = AnalyticsModule();
 

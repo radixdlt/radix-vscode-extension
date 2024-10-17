@@ -4,7 +4,7 @@ import * as vscode from "vscode";
 import {
   ScryptoTreeDataProvider,
   type ScryptoTreeItem,
-} from "./scrypto-tree-data-provider";
+} from "../helpers/scrypto-tree-data-provider";
 import {
   NetworkId,
   PublicKey,

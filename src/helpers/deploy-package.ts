@@ -18,7 +18,7 @@ import {
 } from "@radixdlt/babylon-gateway-api-sdk";
 import * as vscode from "vscode";
 import { getPackageDeployedSuccessfullyWebView } from "../webviews/package-deployed-successfully";
-import { Account } from "./stokenet-accounts";
+import { Account } from "../modules/stokenet-accounts-module";
 
 const gateway = GatewayApiClient.initialize({
   basePath: "https://stokenet.radixdlt.com",

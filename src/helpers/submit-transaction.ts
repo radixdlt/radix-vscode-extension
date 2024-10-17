@@ -10,7 +10,7 @@ import {
 } from "@radixdlt/radix-engine-toolkit";
 import fs from "fs";
 import { GatewayApiClient } from "@radixdlt/babylon-gateway-api-sdk";
-import { Account } from "./stokenet-accounts";
+import { Account } from "../modules/stokenet-accounts-module";
 
 const gateway = GatewayApiClient.initialize({
   basePath: "https://stokenet.radixdlt.com",
