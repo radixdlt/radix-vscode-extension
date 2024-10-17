@@ -139,6 +139,15 @@ export function activate(context: vscode.ExtensionContext) {
       },
     },
     {
+      label: "Submit Transaction",
+      icon: transfer_icon,
+      command: {
+        command: "resim.submit-transaction",
+        title: "Submit Transaction",
+        arguments: [],
+      },
+    },
+    {
       label: "Create Fungible w/Behaviors",
       icon: fungible_token_behaviors_icon,
       command: {
@@ -192,6 +201,15 @@ export function activate(context: vscode.ExtensionContext) {
       command: {
         command: "stokenet.console",
         title: "Open Console",
+        arguments: [],
+      },
+    },
+    {
+      label: "Submit Transaction",
+      icon: transfer_icon,
+      command: {
+        command: "stokenet.submit-transaction",
+        title: "Submit Transaction",
         arguments: [],
       },
     },
@@ -903,15 +921,41 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand("resim.submit-transaction", async (a) => {
+      const path = (a && a.path) || (await prompts.rtmPath());
+
+      if (path) {
+        // check if there is a resim terminal open already
+        let isResimTerminalOpen = false;
+        const command = `resim run ${path}`;
+        vscode.window.terminals.forEach((terminal) => {
+          if (terminal.name === "Resim") {
+            // Use the command here
+            terminal.sendText(command);
+            terminal.show();
+            isResimTerminalOpen = true;
+            return;
+          }
+        });
+        if (!isResimTerminalOpen) {
+          const terminal = vscode.window.createTerminal(`Resim`);
+          terminal.sendText(command);
+          terminal.show();
+        }
+      }
+    }),
+  );
+
+  context.subscriptions.push(
     vscode.commands.registerCommand(
       "stokenet.submit-transaction",
       async (a) => {
-        const path = a.path;
+        const path = (a && a.path) || (await prompts.rtmPath());
         const accountToSubmitWith = await stokenetAccountsModule.pickAccount(
           "Select the account you want to sign transaction with",
         );
 
-        if (accountToSubmitWith) {
+        if (accountToSubmitWith && path) {
           const result = await submitTransaction(accountToSubmitWith, path);
 
           let copyAction = "Copy Transaction Intent Hash";

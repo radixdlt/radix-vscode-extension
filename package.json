@@ -24,8 +24,12 @@
   "contributes": {
     "commands": [
       {
+        "command": "resim.submit-transaction",
+        "title": "Submit to Resim"
+      },
+      {
         "command": "stokenet.submit-transaction",
-        "title": "Submit Transaction"
+        "title": "Submit to Stokenet"
       }
     ],
     "menus": {
@@ -33,6 +37,11 @@
         {
           "when": "resourceExtname == '.rtm'",
           "command": "stokenet.submit-transaction",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceExtname == '.rtm'",
+          "command": "resim.submit-transaction",
           "group": "navigation"
         }
       ]

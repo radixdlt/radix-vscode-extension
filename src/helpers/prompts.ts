@@ -36,4 +36,6 @@ export const prompts = {
       ignoreFocusOut: true,
       valueSelection: [-1, -1],
     }),
+  rtmPath: () =>
+    textPrompt("Enter the path to the `*.rtm` file you want to submit"),
 };
