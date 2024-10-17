@@ -17,6 +17,7 @@ import {
   StokenetAccountsModule,
 } from "./modules/stokenet-accounts-module";
 import { ResimModule } from "./modules/resim-module";
+import { treeItem } from "./helpers/tree-item";
 
 const analytics = AnalyticsModule();
 
@@ -47,179 +48,46 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Tree View Items
   const templates = [
-    {
-      label: "Scrypto Package",
-      icon: package_icon,
-      command: {
-        command: "scrypto.new-package",
-        title: "Scrypto New Package",
-        arguments: [],
-      },
-    },
-    {
-      label: "Create Radix dApp",
-      icon: dapp_icon,
-      command: {
-        command: "create-radix-dapp",
-        title: "Create Radix dApp",
-        arguments: [],
-      },
-    },
+    treeItem("Scrypto Package", "scrypto.new-package", package_icon),
+    treeItem("Create Radix dApp", "create-radix-dapp", dapp_icon),
   ];
   const resimCmd = [
-    {
-      label: "New Account",
-      icon: account_icon,
-      command: {
-        command: "resim.new-account",
-        title: "New Account",
-        arguments: [],
-      },
-    },
-    {
-      label: "Reset",
-      icon: reset_icon,
-      command: { command: "resim.reset", title: "Reset", arguments: [] },
-    },
-    {
-      label: "Publish",
-      icon: publish_icon,
-      command: { command: "resim.publish", title: "Publish", arguments: [] },
-    },
-    {
-      label: "Show Configs",
-      icon: configs_icon,
-      command: {
-        command: "resim.show-configs",
-        title: "Show Configs",
-        arguments: [],
-      },
-    },
-    {
-      label: "Show Ledger",
-      icon: ledger_icon,
-      command: {
-        command: "resim.show-ledger",
-        title: "Show Ledger",
-        arguments: [],
-      },
-    },
-    {
-      label: "Transfer",
-      icon: transfer_icon,
-      command: { command: "resim.transfer", title: "Transfer", arguments: [] },
-    },
-    {
-      label: "Create Fungible Token",
-      icon: fungible_token_icon,
-      command: {
-        command: "resim.new-token-fixed",
-        title: "Create Fungible Token",
-        arguments: [],
-      },
-    },
-    {
-      label: "Call Function",
-      icon: call_function_icon,
-      command: {
-        command: "resim.call-function",
-        title: "Call Function",
-        arguments: [],
-      },
-    },
-    {
-      label: "Call Method",
-      icon: call_method_icon,
-      command: {
-        command: "resim.call-method",
-        title: "Call Method",
-        arguments: [],
-      },
-    },
-    {
-      label: "Create NFT Badge",
-      icon: nft_badge_icon,
-      command: {
-        command: "resim.create-nft-badge",
-        title: "Create NFT Badge",
-        arguments: [],
-      },
-    },
-    {
-      label: "Submit Transaction",
-      icon: transfer_icon,
-      command: {
-        command: "resim.submit-transaction",
-        title: "Submit Transaction",
-        arguments: [],
-      },
-    },
-    {
-      label: "Create Fungible w/Behaviors",
-      icon: fungible_token_behaviors_icon,
-      command: {
-        command: "resim.new-token-behaviors",
-        title: "Create Fungible w/Behaviors",
-        arguments: [],
-      },
-    },
+    treeItem("New Account", "resim.new-account", account_icon),
+    treeItem("Reset", "resim.reset", reset_icon),
+    treeItem("Publish", "resim.publish", publish_icon),
+    treeItem("Show Configs", "resim.show-configs", configs_icon),
+    treeItem("Show Ledger", "resim.show-ledger", ledger_icon),
+    treeItem("Transfer", "resim.transfer", transfer_icon),
+    treeItem(
+      "Create Fungible Token",
+      "resim.new-token-fixed",
+      fungible_token_icon,
+    ),
+    treeItem("Call Function", "resim.call-function", call_function_icon),
+    treeItem("Call Method", "resim.call-method", call_method_icon),
+    treeItem("Create NFT Badge", "resim.create-nft-badge", nft_badge_icon),
+    treeItem(
+      "Submit Transaction Manifest",
+      "resim.submit-transaction",
+      transfer_icon,
+    ),
+    treeItem(
+      "Create Fungible w/Behaviors",
+      "resim.new-token-behaviors",
+      fungible_token_behaviors_icon,
+    ),
   ];
   const stokenetCmd = [
-    {
-      label: "New Account",
-      icon: account_icon,
-      command: {
-        command: "stokenet.new-account",
-        title: "New Account",
-        arguments: [],
-      },
-    },
-    {
-      label: "Get XRD",
-      icon: transfer_icon,
-      command: {
-        command: "stokenet.faucet",
-        title: "Airdrop XRD",
-        arguments: [],
-      },
-    },
-    {
-      label: "Deploy Package",
-      icon: publish_icon,
-      command: {
-        command: "stokenet.deploy-package",
-        title: "Deploy Package",
-        arguments: [],
-      },
-    },
-    // { label: 'Instantiate Blueprint', icon: ledger_icon, command: { command: 'stokenet.instantiate-blueprint', title: 'Instantiate Blueprint', arguments: [] } },
-    {
-      label: "Open Dashboard",
-      icon: dashboard_icon,
-      command: {
-        command: "stokenet.dashboard",
-        title: "Open Dashboard",
-        arguments: [],
-      },
-    },
-    {
-      label: "Open Dev Console",
-      icon: console_icon,
-      command: {
-        command: "stokenet.console",
-        title: "Open Console",
-        arguments: [],
-      },
-    },
-    {
-      label: "Submit Transaction",
-      icon: transfer_icon,
-      command: {
-        command: "stokenet.submit-transaction",
-        title: "Submit Transaction",
-        arguments: [],
-      },
-    },
+    treeItem("New Account", "stokenet.new-account", account_icon),
+    treeItem("Get XRD", "stokenet.faucet", transfer_icon),
+    treeItem("Deploy Package", "stokenet.deploy-package", publish_icon),
+    treeItem("Open Dashboard", "stokenet.dashboard", dashboard_icon),
+    treeItem("Open Dev Console", "stokenet.console", console_icon),
+    treeItem(
+      "Submit Transaction Manifest",
+      "stokenet.submit-transaction",
+      transfer_icon,
+    ),
   ];
 
   // Tree View Data Providers
@@ -707,10 +575,6 @@ export function activate(context: vscode.ExtensionContext) {
       analytics.stokenet.event("stokenet_deploy_package");
     }),
   );
-
-  // context.subscriptions.push(vscode.commands.registerCommand('stokenet.instantiate-blueprint', async () => {
-  // 	vscode.window.showInformationMessage('Stokenet Instantiate Blueprint');
-  // }));
 
   context.subscriptions.push(
     vscode.commands.registerCommand("stokenet.dashboard", async () => {

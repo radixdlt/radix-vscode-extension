@@ -11,6 +11,7 @@ import {
   RadixEngineToolkit,
 } from "@radixdlt/radix-engine-toolkit";
 import { derivePath, getPublicKey } from "ed25519-hd-key";
+import { treeItem } from "../helpers/tree-item";
 
 export type Account = {
   label: string;
@@ -18,16 +19,6 @@ export type Account = {
   mnemonic: string;
   publicKey: string;
   privateKey: string;
-};
-
-const removeStokenetAccountItem = {
-  label: "Remove Account",
-  icon: new vscode.ThemeIcon("trash"),
-  command: {
-    command: "stokenet.remove-account",
-    title: "Remove Account",
-    arguments: [],
-  },
 };
 
 export const StokenetAccountsModule = ({
@@ -39,19 +30,22 @@ export const StokenetAccountsModule = ({
 
   const getAccountsAsScryptoTreeItems = (): ScryptoTreeItem[] => {
     const accounts: Account[] = context.globalState.get(GLOBAL_STATE_KEY) || [];
-    return accounts.map((account) => ({
-      label: account.label,
-      icon: new vscode.ThemeIcon("account"),
-      command: {
-        command: "account.account-detail",
-        title: "Account Detail",
-        arguments: [account.address],
-      },
-    }));
+    return accounts.map((account) =>
+      treeItem(
+        account.label,
+        "account.account-detail",
+        new vscode.ThemeIcon("account"),
+        [account.address],
+      ),
+    );
   };
 
   const stokenetAccountsList = [
-    removeStokenetAccountItem,
+    treeItem(
+      "Remove Account",
+      "stokenet.remove-account",
+      new vscode.ThemeIcon("trash"),
+    ),
     ...getAccountsAsScryptoTreeItems(),
   ];
 
