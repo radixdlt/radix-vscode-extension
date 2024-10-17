@@ -7,8 +7,9 @@ export const textPrompt = (message: string) =>
 
 // TODO - Add validation to the input boxes to statically check for the correct input
 export const prompts = {
-  wasmPath: () => textPrompt("Enter the path to the package Wasm file"),
-  rpdPath: () => textPrompt("Enter the path to the package Rpd file"),
+  wasmPath: () =>
+    textPrompt("Enter the absolute path to the package WASM file"),
+  rpdPath: () => textPrompt("Enter the absolute path to the package RPD file"),
   amount: () => textPrompt("Enter the amount"),
   accountName: () => textPrompt("Enter the account name"),
   transferredResourceAddress: () =>
@@ -37,5 +38,7 @@ export const prompts = {
       valueSelection: [-1, -1],
     }),
   rtmPath: () =>
-    textPrompt("Enter the path to the `*.rtm` file you want to submit"),
+    textPrompt(
+      "Enter the absolute path to the `*.rtm` file you want to submit",
+    ),
 };
