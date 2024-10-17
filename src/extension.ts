@@ -5,40 +5,21 @@ import * as path from "path";
 import { createAccount, airdropXRD } from "./helpers/create-account";
 import { deployPackage } from "./helpers/deploy-package";
 import * as fs from "fs";
+import { AnalyticsModule } from "./helpers/analytics-module";
+import { ScryptoTreeDataProvider } from "./helpers/scrypto-tree-data-provider";
+import { getStokenetAccountWebView } from "./webviews/stokenet-account";
 import { submitTransaction } from "./helpers/submit-transaction";
-// Google Analytics Measurement ID and API Secret Note* this is just the identifier for the GA4 Property & Stream
-const measurement_id = `G-P4R93X3GNW`;
-const api_secret = `90g48uuQQx29pHti8M00iw`;
+
+const analytics = AnalyticsModule();
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  if (vscode.env.isTelemetryEnabled) {
-    // DAU telemetry for GA4
-    fetch(
-      `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          client_id: vscode.env.machineId,
-          events: [
-            {
-              name: "extension_activated",
-              params: {
-                category: "extension",
-                value: "activated",
-                session_id: vscode.env.sessionId,
-              },
-            },
-          ],
-        }),
-      },
-    );
-  }
+  analytics.extension.event("extension_activated", vscode.env.sessionId);
+
   let disposable = vscode.commands.registerCommand(
     "radix-developer-tools.helloScrypto",
     () => {
-      // The code you place here will be executed every time your command is executed
-      // Display a message box to the user
       vscode.window.showInformationMessage("Hello from Radix Developer Tools!");
     },
   );
@@ -79,98 +60,6 @@ export function activate(context: vscode.ExtensionContext) {
       }
     },
   );
-
-  class ScryptoTreeDataProvider implements vscode.TreeDataProvider<string> {
-    private _onDidChangeTreeData: vscode.EventEmitter<
-      string | undefined | null | void
-    > = new vscode.EventEmitter<string | undefined | null | void>();
-    readonly onDidChangeTreeData: vscode.Event<
-      string | undefined | null | void
-    > = this._onDidChangeTreeData.event;
-
-    private items: {
-      label: string;
-      icon: vscode.ThemeIcon | string;
-      command: vscode.Command;
-    }[];
-
-    constructor(
-      items: {
-        label: string;
-        icon: vscode.ThemeIcon | string;
-        command: vscode.Command;
-      }[],
-    ) {
-      this.items = items;
-    }
-
-    getTreeItem(element: string): vscode.TreeItem {
-      const item = this.items.find((item) => item.label === element);
-      if (item) {
-        let iconPath: vscode.ThemeIcon | vscode.Uri;
-        if (typeof item.icon === "string") {
-          iconPath = vscode.Uri.file(path.join(__dirname, item.icon));
-        } else {
-          iconPath = item.icon;
-        }
-
-        return {
-          label: item.label,
-          iconPath: iconPath,
-          id: item.label,
-          collapsibleState: vscode.TreeItemCollapsibleState.None,
-          command: {
-            command: item.command.command,
-            title: item.command.title,
-            arguments: [item.command.arguments],
-          },
-        };
-      }
-      return new vscode.TreeItem(element);
-    }
-
-    getChildren(element?: string): Thenable<string[]> {
-      if (element) {
-        return Promise.resolve([]);
-      } else {
-        return Promise.resolve(this.items.map((item) => item.label));
-      }
-    }
-    // method to add new items to the tree view and refresh the view
-    addNewItem(item: {
-      label: string;
-      icon: vscode.ThemeIcon | string;
-      command: vscode.Command;
-    }) {
-      this.items.push(item);
-      this._onDidChangeTreeData.fire();
-    }
-    // method to remove items from the tree view and refresh the view
-    removeItem(label: string) {
-      this.items = this.items.filter((item) => item.label !== label);
-      this._onDidChangeTreeData.fire();
-    }
-  }
-
-  // This is the webview template for the stokenet account detail view
-  function getWebviewContent(
-    accountName: string,
-    virtualAccount: string,
-    mnemonic: string,
-    privateKey: string,
-    publicKey: string,
-  ) {
-    return `
-        <h1>Stokenet Account</h1>
-		<p> View the details of an account by clicking on the account name in the Stokenet Accounts tree view panel.</p>
-		<h3>Account Name: ${accountName}</h3>
-        <p><strong>Account Address:</strong> ${virtualAccount}</p>
-        <p>Mnemonic: ${mnemonic}</p>
-        <p>Private Key: ${privateKey}</p>
-        <p>Public Key: ${publicKey}</p>
-		<a href="https://stokenet-dashboard.radixdlt.com/account/${virtualAccount}/tokens">View Account on Dashboard</a>
-    `;
-  }
 
   // vscode.ThemeIcon - https://code.visualstudio.com/api/references/icons-in-labels
   const account_icon = new vscode.ThemeIcon("account");
@@ -412,27 +301,7 @@ export function activate(context: vscode.ExtensionContext) {
         terminal.sendText(`scrypto new-package ${packageName}`);
         terminal.show();
       }
-      if (vscode.env.isTelemetryEnabled) {
-        // telemetry for GA4
-        fetch(
-          `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              client_id: vscode.env.machineId,
-              events: [
-                {
-                  name: "new_scrypto_package",
-                  params: {
-                    category: "extension",
-                    value: "scrypto_package_created",
-                  },
-                },
-              ],
-            }),
-          },
-        );
-      }
+      analytics.extension.event("new_scrypto_package");
     }),
   );
 
@@ -442,27 +311,7 @@ export function activate(context: vscode.ExtensionContext) {
       const terminal = vscode.window.createTerminal(`Radix-Dapp`);
       terminal.sendText("npx create-radix-dapp");
       terminal.show();
-      if (vscode.env.isTelemetryEnabled) {
-        // telemetry for GA4
-        fetch(
-          `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              client_id: vscode.env.machineId,
-              events: [
-                {
-                  name: "new_radix_dapp",
-                  params: {
-                    category: "extension",
-                    value: "dapp_created",
-                  },
-                },
-              ],
-            }),
-          },
-        );
-      }
+      analytics.extension.event("new_radix_dapp");
     }),
   );
 
@@ -485,27 +334,7 @@ export function activate(context: vscode.ExtensionContext) {
         terminal.sendText("resim new-account");
         terminal.show();
       }
-      if (vscode.env.isTelemetryEnabled) {
-        // telemetry for GA4
-        fetch(
-          `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              client_id: vscode.env.machineId,
-              events: [
-                {
-                  name: "resim_new_account",
-                  params: {
-                    category: "resim",
-                    value: "new_resim_account_created",
-                  },
-                },
-              ],
-            }),
-          },
-        );
-      }
+      analytics.resim.event("resim_new_account");
     }),
   );
 
@@ -527,27 +356,7 @@ export function activate(context: vscode.ExtensionContext) {
         terminal.sendText("resim reset");
         terminal.show();
       }
-      if (vscode.env.isTelemetryEnabled) {
-        // telemetry for GA4
-        fetch(
-          `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              client_id: vscode.env.machineId,
-              events: [
-                {
-                  name: "resim_reset",
-                  params: {
-                    category: "resim",
-                    value: "resim_reset",
-                  },
-                },
-              ],
-            }),
-          },
-        );
-      }
+      analytics.resim.event("resim_reset");
     }),
   );
 
@@ -657,27 +466,7 @@ export function activate(context: vscode.ExtensionContext) {
         terminal.sendText(`resim publish .`);
         terminal.show();
       }
-      if (vscode.env.isTelemetryEnabled) {
-        // telemetry for GA4
-        fetch(
-          `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              client_id: vscode.env.machineId,
-              events: [
-                {
-                  name: "resim_publish_package",
-                  params: {
-                    category: "resim",
-                    value: "resim_package_published",
-                  },
-                },
-              ],
-            }),
-          },
-        );
-      }
+      analytics.resim.event("resim_publish_package");
     }),
   );
 
@@ -905,7 +694,7 @@ export function activate(context: vscode.ExtensionContext) {
               {}, // Webview options. More on these later.
             );
             // Set its HTML content
-            panel.webview.html = getWebviewContent(
+            panel.webview.html = getStokenetAccountWebView(
               accountName,
               virtualAccount,
               mnemonic,
@@ -915,27 +704,7 @@ export function activate(context: vscode.ExtensionContext) {
           },
         );
       }
-      if (vscode.env.isTelemetryEnabled) {
-        // telemetry for GA4
-        fetch(
-          `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              client_id: vscode.env.machineId,
-              events: [
-                {
-                  name: "stokenet_new_account",
-                  params: {
-                    category: "stokenet",
-                    value: "new_stokenet_account_created",
-                  },
-                },
-              ],
-            }),
-          },
-        );
-      }
+      analytics.stokenet.event("stokenet_new_account");
     }),
   );
 
@@ -953,27 +722,7 @@ export function activate(context: vscode.ExtensionContext) {
         );
       }
       // TODO show account entity details from gateway
-      if (vscode.env.isTelemetryEnabled) {
-        // telemetry for GA4
-        fetch(
-          `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              client_id: vscode.env.machineId,
-              events: [
-                {
-                  name: "stokenet_airdrop_xrd",
-                  params: {
-                    category: "stokenet",
-                    value: "xrd_airdropped",
-                  },
-                },
-              ],
-            }),
-          },
-        );
-      }
+      analytics.stokenet.event("stokenet_airdrop_xrd");
     }),
   );
 
@@ -1521,27 +1270,7 @@ export function activate(context: vscode.ExtensionContext) {
           return;
         }
       }
-      if (vscode.env.isTelemetryEnabled) {
-        // telemetry for GA4
-        fetch(
-          `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              client_id: vscode.env.machineId,
-              events: [
-                {
-                  name: "stokenet_deploy_package",
-                  params: {
-                    category: "stokenet",
-                    value: "stokenet_package_deployed",
-                  },
-                },
-              ],
-            }),
-          },
-        );
-      }
+      analytics.stokenet.event("stokenet_deploy_package");
     }),
   );
 
@@ -1554,27 +1283,7 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.env.openExternal(
         vscode.Uri.parse("https://stokenet-dashboard.radixdlt.com"),
       );
-      if (vscode.env.isTelemetryEnabled) {
-        // telemetry for GA4
-        fetch(
-          `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              client_id: vscode.env.machineId,
-              events: [
-                {
-                  name: "stokenet_dashboard",
-                  params: {
-                    category: "stokenet",
-                    value: "stokenet_dashboard_opened",
-                  },
-                },
-              ],
-            }),
-          },
-        );
-      }
+      analytics.stokenet.event("stokenet_dashboard");
     }),
   );
 
@@ -1583,27 +1292,7 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.env.openExternal(
         vscode.Uri.parse("https://stokenet-console.radixdlt.com"),
       );
-      if (vscode.env.isTelemetryEnabled) {
-        // telemetry for GA4
-        fetch(
-          `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              client_id: vscode.env.machineId,
-              events: [
-                {
-                  name: "stokenet_console",
-                  params: {
-                    category: "stokenet",
-                    value: "stokenet_console_opened",
-                  },
-                },
-              ],
-            }),
-          },
-        );
-      }
+      analytics.stokenet.event("stokenet_console");
     }),
   );
 
@@ -1661,7 +1350,7 @@ export function activate(context: vscode.ExtensionContext) {
             {}, // Webview options. More on these later.
           );
           // Display the account properties in the webview
-          panel.webview.html = getWebviewContent(
+          panel.webview.html = getStokenetAccountWebView(
             selectedAccount.accountName,
             selectedAccount.virtualAccount,
             selectedAccount.mnemonic,
@@ -1671,27 +1360,10 @@ export function activate(context: vscode.ExtensionContext) {
         } else {
           vscode.window.showErrorMessage("Account not found");
         }
-        if (vscode.env.isTelemetryEnabled) {
-          // telemetry for GA4
-          fetch(
-            `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
-            {
-              method: "POST",
-              body: JSON.stringify({
-                client_id: vscode.env.machineId,
-                events: [
-                  {
-                    name: "stokenet_account_detail",
-                    params: {
-                      category: "stokenet",
-                      value: "stokenet_account_detail_viewed",
-                    },
-                  },
-                ],
-              }),
-            },
-          );
-        }
+        analytics.stokenet.event(
+          "stokenet_account_detail",
+          selectedAccount?.virtualAccount,
+        );
       },
     ),
   );

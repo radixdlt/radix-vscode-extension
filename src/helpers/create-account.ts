@@ -9,7 +9,6 @@ import * as bip39 from "bip39";
 import { ok } from "neverthrow";
 import { derivePath, getPublicKey } from "ed25519-hd-key";
 import { GatewayApiClient } from "@radixdlt/babylon-gateway-api-sdk";
-import * as vscode from "vscode";
 
 const gateway = GatewayApiClient.initialize({
   basePath: "https://stokenet.radixdlt.com",
@@ -33,6 +32,14 @@ export async function airdropXRD(accountAddress: string) {
     },
   });
 }
+
+export type Account = {
+  label: string;
+  address: string;  
+  mnemonic: string;
+  publicKey: string;
+  privateKey: string;
+};
 
 export async function createAccount() {
   const privateKeySeed = crypto.randomBytes(32).toString("hex");
