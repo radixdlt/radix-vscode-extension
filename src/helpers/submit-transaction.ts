@@ -10,25 +10,18 @@ import {
 } from "@radixdlt/radix-engine-toolkit";
 import fs from "fs";
 import { GatewayApiClient } from "@radixdlt/babylon-gateway-api-sdk";
+import { Account } from "./stokenet-accounts";
 
 const gateway = GatewayApiClient.initialize({
   basePath: "https://stokenet.radixdlt.com",
   applicationName: "Radix VSCode Extension",
 });
 
-type accountObject = {
-  accountName: string;
-  virtualAccount: string;
-  mnemonic: string;
-  privateKey: string;
-  publicKey: string;
-};
 // TODO return error if the transaction fails
 export async function submitTransaction(
-  payerAccount: accountObject,
+  payerAccount: Account,
   rtmPath: string,
 ) {
-  console.log(`submit tx as ${payerAccount.accountName}`);
   const rtmFile = fs.readFileSync(rtmPath);
 
   const payerAccountPrivateKey = payerAccount.privateKey;

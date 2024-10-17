@@ -1,6 +1,12 @@
 import path from "path";
 import * as vscode from "vscode";
 
+export type ScryptoTreeItem = {
+  label: string;
+  icon: vscode.ThemeIcon;
+  command: vscode.Command;
+};
+
 export class ScryptoTreeDataProvider
   implements vscode.TreeDataProvider<string>
 {
@@ -10,19 +16,9 @@ export class ScryptoTreeDataProvider
   readonly onDidChangeTreeData: vscode.Event<string | undefined | null | void> =
     this._onDidChangeTreeData.event;
 
-  private items: {
-    label: string;
-    icon: vscode.ThemeIcon | string;
-    command: vscode.Command;
-  }[];
+  private items: ScryptoTreeItem[];
 
-  constructor(
-    items: {
-      label: string;
-      icon: vscode.ThemeIcon | string;
-      command: vscode.Command;
-    }[]
-  ) {
+  constructor(items: ScryptoTreeItem[]) {
     this.items = items;
   }
 
@@ -61,7 +57,7 @@ export class ScryptoTreeDataProvider
   // method to add new items to the tree view and refresh the view
   addNewItem(item: {
     label: string;
-    icon: vscode.ThemeIcon | string;
+    icon: vscode.ThemeIcon;
     command: vscode.Command;
   }) {
     this.items.push(item);

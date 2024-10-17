@@ -18,28 +18,26 @@ import {
 } from "@radixdlt/babylon-gateway-api-sdk";
 import * as vscode from "vscode";
 import { getPackageDeployedSuccessfullyWebView } from "../webviews/package-deployed-successfully";
+import { Account } from "./stokenet-accounts";
 
 const gateway = GatewayApiClient.initialize({
   basePath: "https://stokenet.radixdlt.com",
   applicationName: "Radix VSCode Extension",
 });
 
-type accountObject = {
-  accountName: string;
-  virtualAccount: string;
-  mnemonic: string;
-  privateKey: string;
-  publicKey: string;
-};
 // TODO return error if the transaction fails
 export async function deployPackage(
-  payerAccount: accountObject,
+  payerAccount: Account | undefined,
   packageWasmPath: string,
   packageRpdPath: string,
 ) {
+  if (!payerAccount) {
+    vscode.window.showErrorMessage("No payer account selected");
+    return;
+  }
   const packageWasmBuffer = fs.readFileSync(packageWasmPath);
   const packageRpdBuffer = fs.readFileSync(packageRpdPath);
-  const payerAccountAddress = payerAccount.virtualAccount;
+  const payerAccountAddress = payerAccount.address;
   const payerAccountPrivateKey = payerAccount.privateKey;
   const notaryPrivateKey = new PrivateKey.Ed25519(payerAccountPrivateKey);
   const rpdDecoded = await RadixEngineToolkit.ManifestSbor.decodeToString(
@@ -143,7 +141,7 @@ export async function deployPackage(
 }
 
 export const handlePackageDeploymentResponse = (
-  receipt: TransactionCommittedDetailsResponse,
+  receipt: TransactionCommittedDetailsResponse | undefined,
 ) => {
   if (
     receipt &&
@@ -161,9 +159,13 @@ export const handlePackageDeploymentResponse = (
       },
     );
 
+    const packageAddress = receipt.transaction.affected_global_entities.find(
+      (entity) => entity.startsWith("package_"),
+    );
+
     // Set the HTML content of the webview panel
     panel.webview.html = getPackageDeployedSuccessfullyWebView(
-      receipt.transaction.affected_global_entities[1],
+      packageAddress!,
       receipt.transaction.intent_hash,
     );
   } else {

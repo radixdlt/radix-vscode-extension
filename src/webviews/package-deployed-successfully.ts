@@ -5,7 +5,7 @@ export const getPackageDeployedSuccessfullyWebView = (
     <html>
     <body>
         <h1>Stokenet Package Deployed Successfully!</h1>
-        <p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${packageAddress}</span></p>
+        <p>Package Address: <span id="package-address" onclick="copyPackageAddress()">${packageAddress}</span></p>
         <button onclick="copyPackageAddress()">Copy Package Address</button>
         <p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${intentHash}/details">Stokenet Dashboard</a></p>						
         <script>

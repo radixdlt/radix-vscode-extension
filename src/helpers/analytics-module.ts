@@ -1,7 +1,10 @@
 import * as code from "vscode";
 
-export type AnalyticsCategory = 'resim' | 'stokenet' | 'extension';
-export type Analytics = Record<AnalyticsCategory, { event: (name: string, value?: string) => void }>;
+export type AnalyticsCategory = "resim" | "stokenet" | "extension";
+export type Analytics = Record<
+  AnalyticsCategory,
+  { event: (name: string, value?: string) => void }
+>;
 export const AnalyticsModule = (
   {
     measurement_id,
@@ -17,7 +20,7 @@ export const AnalyticsModule = (
     measurement_id: "G-P4R93X3GNW",
     api_secret: "c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9",
     vscode: code.env,
-  }
+  },
 ) => {
   const createCategoryAnalytics = (category: string) => {
     return {
@@ -40,7 +43,7 @@ export const AnalyticsModule = (
                     },
                   ],
                 }),
-              }
+              },
             );
           }
         },
