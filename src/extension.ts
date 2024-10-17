@@ -19,64 +19,30 @@ import {
 import { ResimModule } from "./modules/resim-module";
 import { treeItem } from "./helpers/tree-item";
 
-const analytics = AnalyticsModule();
-
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  analytics.extension.event("extension_activated", vscode.env.sessionId);
-
   // vscode.ThemeIcon - https://code.visualstudio.com/api/references/icons-in-labels
   const account_icon = new vscode.ThemeIcon("account");
-  const reset_icon = new vscode.ThemeIcon("refresh");
   const package_icon = new vscode.ThemeIcon("package");
   const publish_icon = new vscode.ThemeIcon("repo-push");
   const dapp_icon = new vscode.ThemeIcon("empty-window");
-  const configs_icon = new vscode.ThemeIcon("settings-gear");
-  const ledger_icon = new vscode.ThemeIcon("list-flat");
   const transfer_icon = new vscode.ThemeIcon("symbol-boolean");
-  const fungible_token_icon = new vscode.ThemeIcon("symbol-constant");
-  const call_function_icon = new vscode.ThemeIcon("symbol-function");
-  const call_method_icon = new vscode.ThemeIcon("symbol-method");
-  const nft_badge_icon = new vscode.ThemeIcon("verified-filled");
-  const fungible_token_behaviors_icon = new vscode.ThemeIcon("symbol-misc");
   const dashboard_icon = new vscode.ThemeIcon("dashboard");
   const console_icon = new vscode.ThemeIcon("preview");
 
-  const resimModule = ResimModule();
+  const analytics = AnalyticsModule();
+  const resimModule = ResimModule({ context });
   const stokenetAccountsModule = StokenetAccountsModule({ context });
+
+  analytics.extension.event("extension_activated", vscode.env.sessionId);
 
   // Tree View Items
   const templates = [
     treeItem("Scrypto Package", "scrypto.new-package", package_icon),
     treeItem("Create Radix dApp", "create-radix-dapp", dapp_icon),
   ];
-  const resimCmd = [
-    treeItem("New Account", "resim.new-account", account_icon),
-    treeItem("Reset", "resim.reset", reset_icon),
-    treeItem("Publish", "resim.publish", publish_icon),
-    treeItem("Show Configs", "resim.show-configs", configs_icon),
-    treeItem("Show Ledger", "resim.show-ledger", ledger_icon),
-    treeItem("Transfer", "resim.transfer", transfer_icon),
-    treeItem(
-      "Create Fungible Token",
-      "resim.new-token-fixed",
-      fungible_token_icon,
-    ),
-    treeItem("Call Function", "resim.call-function", call_function_icon),
-    treeItem("Call Method", "resim.call-method", call_method_icon),
-    treeItem("Create NFT Badge", "resim.create-nft-badge", nft_badge_icon),
-    treeItem(
-      "Submit Transaction Manifest",
-      "resim.submit-transaction",
-      transfer_icon,
-    ),
-    treeItem(
-      "Create Fungible w/Behaviors",
-      "resim.new-token-behaviors",
-      fungible_token_behaviors_icon,
-    ),
-  ];
+
   const stokenetCmd = [
     treeItem("New Account", "stokenet.new-account", account_icon),
     treeItem("Get XRD", "stokenet.faucet", transfer_icon),
@@ -92,7 +58,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Tree View Data Providers
   const templateTreeDataProvider = new ScryptoTreeDataProvider(templates);
-  const resimTreeDataProvider = new ScryptoTreeDataProvider(resimCmd);
   const stokenetTreeDataProvider = new ScryptoTreeDataProvider(stokenetCmd);
 
   // ######### Create New Project Commands #########
@@ -685,20 +650,8 @@ export function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider(
-      "resim-commands",
-      resimTreeDataProvider,
-    ),
-  );
-  context.subscriptions.push(
-    vscode.window.registerTreeDataProvider(
       "stokenet-commands",
       stokenetTreeDataProvider,
-    ),
-  );
-  context.subscriptions.push(
-    vscode.window.registerTreeDataProvider(
-      "stokenet-accounts",
-      stokenetAccountsModule.getScryptoTreeDataProvider(),
     ),
   );
 }

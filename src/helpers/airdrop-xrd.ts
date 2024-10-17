@@ -9,6 +9,11 @@ const gateway = GatewayApiClient.initialize({
   applicationName: "Radix VSCode Extension",
 });
 
+/**
+ * Submits a transaction to the Stokenet faucet to airdrop XRD to the given account address.
+ *
+ * @param accountAddress The address of the account to airdrop XRD to.
+ */
 export async function airdropXRD(accountAddress: string) {
   const currentEpoch =
     await gateway.transaction.innerClient.transactionConstruction();

@@ -1,4 +1,4 @@
-# radix-vscode-extension
+# Radix VSCode Extension
 
 Radix DLT Visual Studio Code Extension
 
@@ -11,8 +11,9 @@ Radix DLT Visual Studio Code Extension
 - New Radix dApp creation
 - Radix Engine Simulator (RESIM) integration
 - Create new Stokenet Accounts
+- Submit `*.rtm` file as a Stokenet or Resim transaction
 - AirDrop Test XRD Tokens
-- Deploy to Stokenet
+- Deploy package to Stokenet
 - Quick link to Stokenet Dashboard
 - Quick link to Stokenet Dev Console
 

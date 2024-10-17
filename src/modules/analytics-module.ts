@@ -5,6 +5,15 @@ export type Analytics = Record<
   AnalyticsCategory,
   { event: (name: string, value?: string) => void }
 >;
+/**
+ * Responsible for sending analytics events to Google Analytics.
+ *
+ * @example
+ * const analytics = AnalyticsModule();
+ * analytics.resim.event("resim_new_account");
+ * analytics.extension.event("new_radix_dapp");
+ * analytics.stokenet.event("stokenet_new_account");
+ */
 export const AnalyticsModule = (
   {
     measurement_id,

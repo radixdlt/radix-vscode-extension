@@ -1,10 +1,7 @@
 import crypto from "node:crypto";
 import * as bip39 from "bip39";
 import * as vscode from "vscode";
-import {
-  ScryptoTreeDataProvider,
-  type ScryptoTreeItem,
-} from "../helpers/scrypto-tree-data-provider";
+import { ScryptoTreeDataProvider } from "../helpers/scrypto-tree-data-provider";
 import {
   NetworkId,
   PublicKey,
@@ -21,24 +18,17 @@ export type Account = {
   privateKey: string;
 };
 
+/**
+ * Responsible for registering all items in "Stokenet Accounts" tree view.
+ * Provides functions to deal with account management in extension's global state.
+ */
 export const StokenetAccountsModule = ({
   context,
 }: {
   context: vscode.ExtensionContext;
 }) => {
   const GLOBAL_STATE_KEY = "stokenet-accounts-v2";
-
-  const getAccountsAsScryptoTreeItems = (): ScryptoTreeItem[] => {
-    const accounts: Account[] = context.globalState.get(GLOBAL_STATE_KEY) || [];
-    return accounts.map((account) =>
-      treeItem(
-        account.label,
-        "account.account-detail",
-        new vscode.ThemeIcon("account"),
-        [account.address],
-      ),
-    );
-  };
+  const accounts = context.globalState.get<Account[]>(GLOBAL_STATE_KEY) || [];
 
   const stokenetAccountsList = [
     treeItem(
@@ -46,11 +36,23 @@ export const StokenetAccountsModule = ({
       "stokenet.remove-account",
       new vscode.ThemeIcon("trash"),
     ),
-    ...getAccountsAsScryptoTreeItems(),
+    ...accounts.map((account) =>
+      treeItem(
+        account.label,
+        "account.account-detail",
+        new vscode.ThemeIcon("account"),
+        [account.address],
+      ),
+    ),
   ];
 
-  const stokenetAccountsTreeDataProvider = new ScryptoTreeDataProvider(
-    stokenetAccountsList,
+  const treeDataProvider = new ScryptoTreeDataProvider(stokenetAccountsList);
+
+  context.subscriptions.push(
+    vscode.window.registerTreeDataProvider(
+      "stokenet-accounts",
+      treeDataProvider,
+    ),
   );
 
   const pickAccount = async (
@@ -72,6 +74,10 @@ export const StokenetAccountsModule = ({
       .then((selected) => (selected ? selected.account : undefined));
   };
 
+  /**
+   * Uses Radix Engine Toolkit and external libraries to create a new Radix account with random mnemonic.
+   * After account is derived from randomly generated mnemonic, it is stored in extension's global state and added to tree view.
+   */
   const create = async (label: string): Promise<Account> => {
     const privateKeySeed = crypto.randomBytes(32).toString("hex");
     const mnemonic = bip39.entropyToMnemonic(privateKeySeed);
@@ -100,7 +106,7 @@ export const StokenetAccountsModule = ({
 
     await context.globalState.update(GLOBAL_STATE_KEY, updatedAccounts);
 
-    stokenetAccountsTreeDataProvider.addNewItem({
+    treeDataProvider.addNewItem({
       label: newAccount.label,
       icon: new vscode.ThemeIcon("account"),
       command: {
@@ -121,9 +127,7 @@ export const StokenetAccountsModule = ({
     );
     return context.globalState
       .update(GLOBAL_STATE_KEY, updatedAccounts)
-      .then(() => {
-        stokenetAccountsTreeDataProvider.removeItem(account.label);
-      });
+      .then(() => treeDataProvider.removeItem(account.label));
   };
 
   const getAccountByAddress = (address: string): Account | undefined => {
@@ -131,13 +135,10 @@ export const StokenetAccountsModule = ({
     return accounts.find((a) => a.address === address);
   };
 
-  const getScryptoTreeDataProvider = () => stokenetAccountsTreeDataProvider;
-
   return {
     create,
     remove,
     pickAccount,
     getAccountByAddress,
-    getScryptoTreeDataProvider,
   };
 };

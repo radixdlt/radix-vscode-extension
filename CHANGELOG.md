@@ -1,10 +1,10 @@
-# Change Log
+# Changelog
 
-All notable changes to the "vscode-webpack-extension" extension will be documented in this file.
+## 0.0.6
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+- Add "Submit Transaction to Stokenet" and "Submit Transaction to Resim" items to context menu of `*.rtm` files
 
-## [Unreleased]
+## 0.0.5
 
 - Initial release of the extension including the following features:
   - Radix Transaction Manifest Language (RTM) syntax highlighting
