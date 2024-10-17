@@ -24,10 +24,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "radix-developer-tools.helloScrypto",
-        "title": "Hello Scrypto"
-      },
-      {
         "command": "stokenet.submit-transaction",
         "title": "Submit Transaction"
       }

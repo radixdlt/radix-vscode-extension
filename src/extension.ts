@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import * as path from "path";
 import { createAccount, airdropXRD } from "./helpers/create-account";
 import { deployPackage } from "./helpers/deploy-package";
 import * as fs from "fs";
@@ -16,13 +15,6 @@ const analytics = AnalyticsModule();
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   analytics.extension.event("extension_activated", vscode.env.sessionId);
-
-  let disposable = vscode.commands.registerCommand(
-    "radix-developer-tools.helloScrypto",
-    () => {
-      vscode.window.showInformationMessage("Hello from Radix Developer Tools!");
-    },
-  );
 
   let submitTxCommandDisposable = vscode.commands.registerCommand(
     "stokenet.submit-transaction",
@@ -1369,7 +1361,6 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // Add tree views to the extension context
-  context.subscriptions.push(disposable);
   context.subscriptions.push(submitTxCommandDisposable);
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider(
