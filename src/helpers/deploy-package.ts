@@ -12,7 +12,12 @@ import {
   TransactionManifest,
 } from "@radixdlt/radix-engine-toolkit";
 import fs from "fs";
-import { GatewayApiClient } from "@radixdlt/babylon-gateway-api-sdk";
+import {
+  GatewayApiClient,
+  TransactionCommittedDetailsResponse,
+} from "@radixdlt/babylon-gateway-api-sdk";
+import * as vscode from "vscode";
+import { getPackageDeployedSuccessfullyWebView } from "../webviews/package-deployed-successfully";
 
 const gateway = GatewayApiClient.initialize({
   basePath: "https://stokenet.radixdlt.com",
@@ -136,3 +141,32 @@ export async function deployPackage(
   );
   return reciept;
 }
+
+export const handlePackageDeploymentResponse = (
+  receipt: TransactionCommittedDetailsResponse,
+) => {
+  if (
+    receipt &&
+    receipt.transaction &&
+    receipt.transaction.affected_global_entities &&
+    receipt.transaction.intent_hash
+  ) {
+    // Create a webview panel
+    const panel = vscode.window.createWebviewPanel(
+      "stokenetPackage",
+      "Stokenet Package",
+      vscode.ViewColumn.One,
+      {
+        enableScripts: true, // Enable scripts in the webview
+      },
+    );
+
+    // Set the HTML content of the webview panel
+    panel.webview.html = getPackageDeployedSuccessfullyWebView(
+      receipt.transaction.affected_global_entities[1],
+      receipt.transaction.intent_hash,
+    );
+  } else {
+    vscode.window.showErrorMessage("Error deploying package to stokenet");
+  }
+};

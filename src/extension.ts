@@ -2,7 +2,10 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { createAccount, airdropXRD } from "./helpers/create-account";
-import { deployPackage } from "./helpers/deploy-package";
+import {
+  deployPackage,
+  handlePackageDeploymentResponse,
+} from "./helpers/deploy-package";
 import * as fs from "fs";
 import { AnalyticsModule } from "./helpers/analytics-module";
 import { ScryptoTreeDataProvider } from "./helpers/scrypto-tree-data-provider";
@@ -827,45 +830,7 @@ export function activate(context: vscode.ExtensionContext) {
               );
               // compose the deploy package transaction and send to gateway
               deployPackage(payerAccount, packageWasmPath, packageRpdPath).then(
-                (reciept) => {
-                  if (
-                    reciept &&
-                    reciept.transaction &&
-                    reciept.transaction.affected_global_entities
-                  ) {
-                    // Create a webview panel
-                    const panel = vscode.window.createWebviewPanel(
-                      "stokenetPackage",
-                      "Stokenet Package",
-                      vscode.ViewColumn.One,
-                      {
-                        enableScripts: true, // Enable scripts in the webview
-                      },
-                    );
-
-                    // Set the HTML content of the webview panel
-                    panel.webview.html = `
-								<html>
-								<body>
-									<h1>Stokenet Package Deployed Successfully!</h1>
-									<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
-									<button onclick="copyPackageAddress()">Copy Package Address</button>
-									<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>						
-									<script>
-										function copyPackageAddress() {
-											const packageAddress = document.getElementById('package-address').innerText;
-											navigator.clipboard.writeText(packageAddress);
-										}
-									</script>
-								</body>
-								</html>
-							`;
-                  } else {
-                    vscode.window.showErrorMessage(
-                      "Error deploying package to stokenet",
-                    );
-                  }
-                },
+                (receipt) => handlePackageDeploymentResponse(receipt),
               );
               return;
             }
@@ -881,45 +846,7 @@ export function activate(context: vscode.ExtensionContext) {
           );
           // compose the deploy package transaction and send to gateway
           deployPackage(payerAccount, packageWasmPath, packageRpdPath).then(
-            (reciept) => {
-              if (
-                reciept &&
-                reciept.transaction &&
-                reciept.transaction.affected_global_entities
-              ) {
-                // Create a webview panel
-                const panel = vscode.window.createWebviewPanel(
-                  "stokenetPackage",
-                  "Stokenet Package",
-                  vscode.ViewColumn.One,
-                  {
-                    enableScripts: true, // Enable scripts in the webview
-                  },
-                );
-
-                // Set the HTML content of the webview panel
-                panel.webview.html = `
-					<html>
-					<body>
-						<h1>Stokenet Package Deployed Successfully!</h1>
-						<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
-						<button onclick="copyPackageAddress()">Copy Package Address</button>
-						<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>						
-						<script>
-							function copyPackageAddress() {
-								const packageAddress = document.getElementById('package-address').innerText;
-								navigator.clipboard.writeText(packageAddress);
-							}
-						</script>
-					</body>
-					</html>
-				`;
-              } else {
-                vscode.window.showErrorMessage(
-                  "Error deploying package to stokenet",
-                );
-              }
-            },
+            (receipt) => handlePackageDeploymentResponse(receipt),
           );
           return;
         }
@@ -990,45 +917,7 @@ export function activate(context: vscode.ExtensionContext) {
               );
               // compose the deploy package transaction and send to gateway
               deployPackage(payerAccount, packageWasmPath, packageRpdPath).then(
-                (reciept) => {
-                  if (
-                    reciept &&
-                    reciept.transaction &&
-                    reciept.transaction.affected_global_entities
-                  ) {
-                    // Create a webview panel
-                    const panel = vscode.window.createWebviewPanel(
-                      "stokenetPackage",
-                      "Stokenet Package",
-                      vscode.ViewColumn.One,
-                      {
-                        enableScripts: true, // Enable scripts in the webview
-                      },
-                    );
-
-                    // Set the HTML content of the webview panel
-                    panel.webview.html = `
-								<html>
-								<body>
-									<h1>Stokenet Package Deployed Successfully!</h1>
-									<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
-									<button onclick="copyPackageAddress()">Copy Package Address</button>
-									<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>						
-									<script>
-										function copyPackageAddress() {
-											const packageAddress = document.getElementById('package-address').innerText;
-											navigator.clipboard.writeText(packageAddress);
-										}
-									</script>
-								</body>
-								</html>
-							`;
-                  } else {
-                    vscode.window.showErrorMessage(
-                      "Error deploying package to stokenet",
-                    );
-                  }
-                },
+                (receipt) => handlePackageDeploymentResponse(receipt),
               );
               return;
             }
@@ -1118,45 +1007,7 @@ export function activate(context: vscode.ExtensionContext) {
                     payerAccount,
                     packageWasmPath,
                     packageRpdPath,
-                  ).then((reciept) => {
-                    if (
-                      reciept &&
-                      reciept.transaction &&
-                      reciept.transaction.affected_global_entities
-                    ) {
-                      // Create a webview panel
-                      const panel = vscode.window.createWebviewPanel(
-                        "stokenetPackage",
-                        "Stokenet Package",
-                        vscode.ViewColumn.One,
-                        {
-                          enableScripts: true, // Enable scripts in the webview
-                        },
-                      );
-
-                      // Set the HTML content of the webview panel
-                      panel.webview.html = `
-								<html>
-								<body>
-									<h1>Stokenet Package Deployed Successfully!</h1>
-									<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
-									<button onclick="copyPackageAddress()">Copy Package Address</button>
-									<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>						
-									<script>
-										function copyPackageAddress() {
-											const packageAddress = document.getElementById('package-address').innerText;
-											navigator.clipboard.writeText(packageAddress);
-										}
-									</script>
-								</body>
-								</html>
-							`;
-                    } else {
-                      vscode.window.showErrorMessage(
-                        "Error deploying package to stokenet",
-                      );
-                    }
-                  });
+                  ).then((reciept) => handlePackageDeploymentResponse(reciept));
                   return;
                 }
               }
@@ -1171,44 +1022,7 @@ export function activate(context: vscode.ExtensionContext) {
               );
               // compose the deploy package transaction and send to gateway
               deployPackage(payerAccount, packageWasmPath, packageRpdPath).then(
-                (reciept) => {
-                  if (
-                    reciept &&
-                    reciept.transaction &&
-                    reciept.transaction.affected_global_entities
-                  ) {
-                    // Create a webview panel
-                    const panel = vscode.window.createWebviewPanel(
-                      "stokenetPackage",
-                      "Stokenet Package",
-                      vscode.ViewColumn.One,
-                      {
-                        enableScripts: true, // Enable scripts in the webview
-                      },
-                    );
-                    // Set the HTML content of the webview panel
-                    panel.webview.html = `
-							<html>
-							<body>
-								<h1>Stokenet Package Deployed Successfully!</h1>
-								<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
-								<button onclick="copyPackageAddress()">Copy Package Address</button>
-								<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>                        
-								<script>
-									function copyPackageAddress() {
-										const packageAddress = document.getElementById('package-address').innerText;
-										navigator.clipboard.writeText(packageAddress);
-									}
-								</script>
-							</body>
-							</html>
-						`;
-                  } else {
-                    vscode.window.showErrorMessage(
-                      "Error deploying package to stokenet",
-                    );
-                  }
-                },
+                (receipt) => handlePackageDeploymentResponse(receipt),
               );
               return;
             }
@@ -1220,44 +1034,7 @@ export function activate(context: vscode.ExtensionContext) {
           );
           // compose the deploy package transaction and send to gateway
           deployPackage(payerAccount, packageWasmPath, packageRpdPath).then(
-            (reciept) => {
-              if (
-                reciept &&
-                reciept.transaction &&
-                reciept.transaction.affected_global_entities
-              ) {
-                // Create a webview panel
-                const panel = vscode.window.createWebviewPanel(
-                  "stokenetPackage",
-                  "Stokenet Package",
-                  vscode.ViewColumn.One,
-                  {
-                    enableScripts: true, // Enable scripts in the webview
-                  },
-                );
-                // Set the HTML content of the webview panel
-                panel.webview.html = `
-							<html>
-							<body>
-								<h1>Stokenet Package Deployed Successfully!</h1>
-								<p>Package Address: <span id="package-address" onclick="copyPackageAddress()" >${reciept.transaction.affected_global_entities[1]}</span></p>
-								<button onclick="copyPackageAddress()">Copy Package Address</button>
-								<p>View on the <a href="https://stokenet-dashboard.radixdlt.com/transaction/${reciept.transaction.intent_hash}/details">Stokenet Dashboard</a></p>                        
-								<script>
-									function copyPackageAddress() {
-										const packageAddress = document.getElementById('package-address').innerText;
-										navigator.clipboard.writeText(packageAddress);
-									}
-								</script>
-							</body>
-							</html>
-						`;
-              } else {
-                vscode.window.showErrorMessage(
-                  "Error deploying package to stokenet",
-                );
-              }
-            },
+            (receipt) => handlePackageDeploymentResponse(receipt),
           );
           return;
         }
