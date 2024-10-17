@@ -26,12 +26,11 @@ type accountObject = {
 // TODO return error if the transaction fails
 export async function submitTransaction(
   payerAccount: accountObject,
-  rtmPath: string
+  rtmPath: string,
 ) {
-    console.log(`submit tx as ${payerAccount.accountName}`);
+  console.log(`submit tx as ${payerAccount.accountName}`);
   const rtmFile = fs.readFileSync(rtmPath);
 
-  
   const payerAccountPrivateKey = payerAccount.privateKey;
   const notaryPrivateKey = new PrivateKey.Ed25519(payerAccountPrivateKey);
 
@@ -62,7 +61,7 @@ export async function submitTransaction(
       .header(transactionHeader)
       .manifest(manifest)
       .sign(notaryPrivateKey)
-      .notarize(notaryPrivateKey)
+      .notarize(notaryPrivateKey),
   );
 
   const transactionId =
@@ -80,7 +79,7 @@ export async function submitTransaction(
     });
 
     let transactionStatus = await gateway.transaction.getStatus(
-      transactionId.id
+      transactionId.id,
     );
     while (transactionStatus.status === "Pending") {
       // TODO Show a spinner
