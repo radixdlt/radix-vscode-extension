@@ -1,307 +1,454 @@
 {
-  // =====================
-  // Instruction Snippets
-  // =====================
-  "Call Method": {
-    "scope": "scope.rtm",
-    "prefix": "CALL_METHOD",
-    "body": "CALL_METHOD Address(\"$1\") \"${2:Method Name}\" \"${3:args}\";",
-    "description": "Calls a method on a component."
+  "InstructionSnippets": {
+    "Allocate Global Address": {
+      "prefix": "ALLOCATE_GLOBAL_ADDRESS",
+      "body": [
+        "ALLOCATE_GLOBAL_ADDRESS",
+        "\tAddress(\"$1\")",
+        "\t\"${2:Blueprint_Name}\"",
+        "\tAddressReservation(\"${3:address_reservation}\")",
+        "\tNamedAddress(\"${4:address}\")",
+        ";"
+      ],
+      "description": "Allocate a global address."
+    },
+    "Assert Worktop Contains": {
+      "prefix": "ASSERT_WORKTOP_CONTAINS",
+      "body": [
+        "ASSERT_WORKTOP_CONTAINS",
+        "\tAddress(\"$1\")",
+        "Decimal(\"$2\")",
+        ";"
+      ],
+      "description": "Verify the transaction worktop contains at least an amount of a resource."
+    },
+    "Assert Worktop Contains Any": {
+      "prefix": "ASSERT_WORKTOP_CONTAINS_ANY",
+      "body": ["ASSERT_WORKTOP_CONTAINS_ANY", "\tAddress(\"$1\")", ";"],
+      "description": "Verifies the worktop contains any non-zero amount of a resource."
+    },
+    "Assert Worktop Contains by Ids": {
+      "prefix": "ASSERT_WORKTOP_CONTAINS_NON_FUNGIBLES",
+      "body": [
+        "ASSERT_WORKTOP_CONTAINS_NON_FUNGIBLES",
+        "\tAddress(\"$2\")",
+        "\tArray<NonFungibleLocalId>(",
+        "\t\tNonFungibleLocalId(\"${1:id}\"),",
+        "\t)",
+        ";"
+      ],
+      "description": "Asserts that the transaction worktop contains some resource."
+    },
+    "Burn Resource": {
+      "prefix": "BURN_RESOURCE",
+      "body": ["BURN_RESOURCE", "\tBucket(\"${1:Bucket_Name}\")", ";"],
+      "description": "Burns a Bucket of a Resource."
+    },
+    "Call Function": {
+      "prefix": "CALL_FUNCTION",
+      "body": [
+        "CALL_FUNCTION",
+        "\tAddress(\"${1:Package_Address}\")",
+        "\t\"${2:Blueprint_Name}\"",
+        "\t\"${3:Function_Name}\"",
+        "\t${4:Args}",
+        ";"
+      ],
+      "description": "Calls a function on a blueprint."
+    },
+    "Call Method": {
+      "prefix": "CALL_METHOD",
+      "body": [
+        "CALL_METHOD",
+        "\tAddress(\"${1:Component_Address}\")",
+        "\t\"${2:Method_Name}\"",
+        "\t${3:Args}",
+        ";"
+      ],
+      "description": "Calls a method on a component."
+    },
+    "Clone Proof": {
+      "prefix": "CLONE_PROOF",
+      "body": [
+        "CLONE_PROOF",
+        "\tProof(\"${1:Original_Proof_Name}\")",
+        "\tProof(\"${2:New_Proof_Name}\")",
+        ";"
+      ],
+      "description": "Clones an existing proof."
+    },
+    "Create Proof from Auth Zone of All": {
+      "prefix": "CREATE_PROOF_FROM_AUTH_ZONE_OF_ALL",
+      "body": [
+        "CREATE_PROOF_FROM_AUTH_ZONE_OF_ALL",
+        "\tAddress(\"$1\")",
+        "\tProof(\"${2:Proof_Name}\")",
+        ";"
+      ],
+      "description": "Creates a proof of a full resource amount on the Auth Zone."
+    },
+    "Create Proof from Auth Zone of Amount": {
+      "prefix": "CREATE_PROOF_FROM_AUTH_ZONE_OF_AMOUNT",
+      "body": [
+        "CREATE_PROOF_FROM_AUTH_ZONE_OF_AMOUNT",
+        "\tAddress(\"$2\")",
+        "\tDecimal(\"${1:Amount}\")",
+        "\tProof(\"${3:Proof_Name}\")",
+        ";"
+      ],
+      "description": "Creates a proof of specified amount from the Auth Zone."
+    },
+    "Create Proof from Auth Zone of Non-fungibles": {
+      "prefix": "CREATE_PROOF_FROM_AUTH_ZONE_OF_NON_FUNGIBLES",
+      "body": [
+        "CREATE_PROOF_FROM_AUTH_ZONE_OF_NON_FUNGIBLES",
+        "\tAddress(\"$2\")",
+        "\tArray<NonFungibleLocalId>(",
+        "\t\tNonFungibleLocalId(\"${1:id}\"),",
+        "\t)",
+        "\tProof(\"${3:Proof_Name}\")",
+        ";"
+      ],
+      "description": "Creates a non-fungible proof from on Auth Zone."
+    },
+    "Create Proof from Bucket of All": {
+      "prefix": "CREATE_PROOF_FROM_BUCKET_OF_ALL",
+      "body": [
+        "CREATE_PROOF_FROM_BUCKET_OF_ALL",
+        "\tBucket(\"${1:Bucket_Name}\")",
+        "\tProof(\"${2:Proof_Name}\")",
+        ";"
+      ],
+      "description": "Creates a proof of a full resource amount in a Bucket."
+    },
+    "Drop All Proofs": {
+      "prefix": "DROP_ALL_PROOFS",
+      "body": ["DROP_ALL_PROOFS", ";"],
+      "description": "Drops all Proofs."
+    },
+    "Drop Auth Zone Proofs": {
+      "prefix": "DROP_AUTH_ZONE_PROOFS",
+      "body": ["DROP_AUTH_ZONE_PROOFS", ";"],
+      "description": "Drops all Proofs in the Auth Zone."
+    },
+    "Drop All Named Proofs": {
+      "prefix": "DROP_NAMED_PROOFS",
+      "body": ["DROP_NAMED_PROOFS", ";"],
+      "description": "Drops all named Proofs."
+    },
+    "Mint Fungible": {
+      "prefix": "MINT_FUNGIBLE",
+      "body": [
+        "MINT_FUNGIBLE",
+        "\tAddress(\"${1:Resource_Address}\")",
+        "\tDecimal(\"${2:Amount}\")",
+        ";"
+      ],
+      "description": "Mints a fungible token."
+    },
+    "Mint Non Fungible with No Data": {
+      "prefix": "MINT_NON_FUNGIBLE",
+      "body": [
+        "MINT_NON_FUNGIBLE",
+        "\tAddress(\"${1:Resource_Address}\")",
+        "\tMap<NonFungibnleLocalId, Tuple>(",
+        "\t\tNonFungibleLocalId(\"${2:id}\") => Tuple(Tuple()),",
+        "\t)",
+        ";"
+      ],
+      "description": "Mints a non-fungible that has no non-fungible data."
+    },
+    "Mint RUID Non Fungible with No Data": {
+      "prefix": "MINT_RUID_NON_FUNGIBLE",
+      "body": [
+        "MINT_RUID_NON_FUNGIBLE",
+        "\tAddress(\"${1:Resource_Address}\")",
+        "\tArray<Tuple>(",
+        "\t\tTuple(Tuple()),",
+        "\t)",
+        ";"
+      ],
+      "description": "Mints a non-fungible with a RUID local ID and no non-fungible data."
+    },
+    "Pop from Auth Zone": {
+      "prefix": "POP_FROM_AUTH_ZONE",
+      "body": ["POP_FROM_AUTH_ZONE", "\tProof(\"${1:Proof_Name}\")", ";"],
+      "description": "Pops a proof from the Auth Zone."
+    },
+    "Push to Auth Zone": {
+      "prefix": "PUSH_TO_AUTH_ZONE",
+      "body": ["PUSH_TO_AUTH_ZONE", "\tProof(\"${1:Proof_Name}\")", ";"],
+      "description": "Pushes a proof to the auth zone."
+    },
+    "Return to Worktop": {
+      "prefix": "RETURN_TO_WORKTOP",
+      "body": ["RETURN_TO_WORKTOP", "\tBucket(\"${1:Bucket_Name}\")", ";"],
+      "description": "Returns a bucket to the transaction worktop."
+    },
+    "Take All From Worktop": {
+      "prefix": "TAKE_ALL_FROM_WORKTOP",
+      "body": [
+        "TAKE_ALL_FROM_WORKTOP",
+        "\tAddress(\"$1\")",
+        "\tBucket(\"${2:Bucket_Name}\")",
+        ";"
+      ],
+      "description": "Takes all or a resource from the worktop into a new bucket."
+    },
+    "Take From Worktop by Amount": {
+      "prefix": "TAKE_FROM_WORKTOP",
+      "body": [
+        "TAKE_FROM_WORKTOP",
+        "\tAddress(\"$1\")",
+        "\tDecimal(\"${2:Amount}\")",
+        "\tBucket(\"${3:Bucket_Name}\")",
+        ";"
+      ],
+      "description": "Takes an amount of a resource from the worktop and into a bucket."
+    },
+    "Take Non-fungibles from Worktop": {
+      "prefix": "TAKE_NON_FUNGIBLES_FROM_WORKTOP",
+      "body": [
+        "TAKE_NON_FUNGIBLES_FROM_WORKTOP",
+        "\tAddress(\"$1\")",
+        "\tArray<NonFungibleLocalId>(",
+        "\t\tNonFungibleLocalId(\"${2:id}\"),",
+        "\t)",
+        "\tBucket(\"${3:Bucket_Name}\")",
+        ";"
+      ],
+      "description": "Takes resources from the worktop and into a bucket."
+    }
   },
-  "Call Function": {
-    "scope": "scope.rtm",
-    "prefix": "CALL_FUNCTION",
-    "body": "CALL_FUNCTION Address(\"$1\") \"${2:Blueprint Name}\" \"${3:Function Name}\" \"${4:args}\";",
-    "description": "Calls a function on a blueprint."
+
+  "CommonOperations": {
+    "Create Proof of Amount from Account": {
+      "prefix": "CREATE_PROOF_OF_AMOUNT_FROM_ACCOUNT",
+      "body": [
+        "CALL_METHOD",
+        "\tAddress(\"${1:account_component_address}\")",
+        "\t\"create_proof_of_amount\"",
+        "\tAddress(\"${2:resource_address}\")",
+        "\tDecimal(\"${3:amount}\")",
+        ";"
+      ],
+      "description": "Create a proof from an account."
+    },
+    "Create Proof of Non-fungibles from Account": {
+      "prefix": "CREATE_PROOF_OF_NON_FUNGIBLES_FROM_ACCOUNT",
+      "body": [
+        "CALL_METHOD",
+        "\tAddress(\"${1:account_component_address}\")",
+        "\t\"create_proof_of_non_fungibles\"",
+        "\tAddress(\"${2:resource_address}\")",
+        "\tArray<NonFungibleLocalId>(",
+        "\t\tNonFungibleLocalId(\"${3:id}\"),",
+        "\t)",
+        ";"
+      ],
+      "description": "Create a proof of non-fungibles from an account."
+    },
+    "Deposit to Account": {
+      "prefix": "DEPOSIT_TO_ACCOUNT",
+      "body": [
+        "CALL_METHOD",
+        "\tAddress(\"${1:Account_Component}\")",
+        "\t\"deposit\"",
+        "\tBucket(\"${2:Bucket_Name}\")",
+        ";"
+      ],
+      "description": "Deposit funds into an account."
+    },
+    "Deposit Batch to Account": {
+      "prefix": "DEPOSIT_BATCH_TO_ACCOUNT",
+      "body": [
+        "CALL_METHOD",
+        "\tAddress(\"${1:Account_Component}\")",
+        "\t\"deposit_batch\"",
+        "\tArray<Bucket>(",
+        "\t\tBucket(\"${2:Bucket_Name}\"),",
+        "\t)",
+        ";"
+      ],
+      "description": "Deposit a batch of funds into an account."
+    },
+    "Deposit Entire Worktop to Account": {
+      "prefix": "DEPOSIT_ENTIRE_WORKTOP_TO_ACCOUNT",
+      "body": [
+        "CALL_METHOD",
+        "\tAddress(\"${1:Account_Component}\")",
+        "\t\"deposit_batch\"",
+        "\tExpression(\"ENTIRE_WORKTOP\")",
+        ";"
+      ],
+      "description": "Deposit the entire worktop into an account."
+    },
+    "Lock Fee": {
+      "prefix": "LOCK_FEE",
+      "body": [
+        "CALL_METHOD",
+        "\tAddress(\"${1:Account_Component}\")",
+        "\t\"lock_fee\"",
+        "\tDecimal(\"${2:Fee_to_Lock}\")",
+        ";"
+      ],
+      "description": "Lock a fee for the transaction."
+    },
+    "Withdraw from Account": {
+      "prefix": "WITHDRAW_FROM_ACCOUNT",
+      "body": [
+        "CALL_METHOD",
+        "\tAddress(\"${1:Account_Component}\")",
+        "\t\"withdraw\"",
+        "\tAddress(\"${2:Resource_to_Withdraw}\")",
+        "\tDecimal(\"${3:Amount}\")",
+        ";"
+      ],
+      "description": "Withdraw tokens from an account."
+    },
+    "Withdraw Non Fungibles from Account by Ids": {
+      "prefix": "WITHDRAW_NON_FUNGIBLES_FROM_ACCOUNT",
+      "body": [
+        "CALL_METHOD",
+        "\tAddress(\"${1:Account_Component}\")",
+        "\t\"withdraw_non_fungibles\"",
+        "\tAddress(\"${2:Resource_to_Withdraw}\")",
+        "\tArray<NonFungibleLocalId>(",
+        "\t\tNonFungibleLocalId(\"${3:id}\"),",
+        "\t)",
+        ";"
+      ],
+      "description": "Withdraw non-fungible tokens from an account."
+    }
   },
-  "Take From Worktop": {
-    "scope": "scope.rtm",
-    "prefix": "TAKE_FROM_WORKTOP",
-    "body": "TAKE_FROM_WORKTOP Address(\"$1\") Bucket(\"${2:Bucket Name}\");",
-    "description": "Takes resources from the worktop and into a bucket."
+
+  "CommonTypes": {
+    "Address Component": {
+      "prefix": "Address Component",
+      "body": "Address(\"${1:Component_Address}\")"
+    },
+    "Address Package": {
+      "prefix": "Address Package",
+      "body": "Address(\"${1:Package_Address}\")"
+    },
+    "Address Resource": {
+      "prefix": "Address Resource",
+      "body": "Address(\"${1:Resource_Address}\")"
+    },
+    "AddressReservation": {
+      "prefix": "AddressReservation",
+      "body": "AddressReservation(\"$1\")"
+    },
+    "Array": {
+      "prefix": "Array",
+      "body": "Array<${1|I8,I16,I32,I64,I128,U8,U16,U32,U64,U128,Decimal,PreciseDecimal,String,Enum,Option,Some,None,Ok,Err,Array,Tuple,Map,Address,Hash,Bucket,Proof,NonFungibleLocalId,NonFungibleGlobalId,Bytes|}>($2,)"
+    },
+    "Blob": {
+      "prefix": "Blob",
+      "body": "Blob(\"${1:Blob_Hash}\")"
+    },
+    "Bucket": {
+      "prefix": "Bucket",
+      "body": "Bucket(\"${1:Bucket_Name}\")"
+    },
+    "Bytes": {
+      "prefix": "Bytes",
+      "body": "Bytes(\"${1:Bytes_Hex}\")"
+    },
+    "Decimal": {
+      "prefix": "Decimal",
+      "body": "Decimal(\"${1:number}\")"
+    },
+    "Enum": {
+      "prefix": "Enum",
+      "body": "Enum(\"${1:Variant_Name}\", \"${2:Optional_Values}\")"
+    },
+    "Err": {
+      "prefix": "Err",
+      "body": "Err($1)"
+    },
+    "Expression": {
+      "prefix": "Expression",
+      "body": "Expression(\"${1|ENTIRE_WORKTOP,ENTIRE_AUTH_ZONE|}\")"
+    },
+    "Hash": {
+      "prefix": "Hash",
+      "body": "Hash(\"${1:Hash_Hex}\")"
+    },
+    "Map": {
+      "prefix": "Map",
+      "body": "Map<${1|I8,I16,I32,I64,I128,U8,U16,U32,U64,U128,Decimal,PreciseDecimal,String,Enum,Option,Some,None,Ok,Err,Array,Tuple,Map,Address,Hash,Bucket,Proof,NonFungibleLocalId,NonFungibleGlobalId,Bytes|, ${2|I8,I16,I32,I64,I128,U8,U16,U32,U64,U128,Decimal,PreciseDecimal,String,Enum,Option,Some,None,Ok,Err,Array,Tuple,Map,Address,Hash,Bucket,Proof,NonFungibleLocalId,NonFungibleGlobalId,Bytes|}>($3 => $4,)"
+    },
+    "None": {
+      "prefix": "None",
+      "body": "None"
+    },
+    "NonFungibleGlobalId": {
+      "prefix": "NonFungibleGlobalId",
+      "body": "NonFungibleGlobalId(\"${1:Resource_Address}:${2:NonFungibleLocalId}\")"
+    },
+    "NonFungibleLocalId Bytes": {
+      "prefix": "NonFungibleLocalId Bytes",
+      "body": "NonFungibleLocalId(\"${1:NonFungibleLocalId}]\")"
+    },
+    "NonFungibleLocalId Integer": {
+      "prefix": "NonFungibleLocalId Integer",
+      "body": "NonFungibleLocalId(\"#${1:NonFungibleLocalId}#\")"
+    },
+    "NonFungibleLocalId RUID": {
+      "prefix": "NonFungibleLocalId RUID",
+      "body": "NonFungibleLocalId(\"{${1:NonFungibleLocalId}}\")"
+    },
+    "NonFungibleLocalId String": {
+      "prefix": "NonFungibleLocalId String",
+      "body": "NonFungibleLocalId(\"<${1:NonFungibleLocalId}>\")"
+    },
+    "Ok": {
+      "prefix": "Ok",
+      "body": "Ok($1)"
+    },
+    "Proof": {
+      "prefix": "Proof",
+      "body": "Proof(\"${1:Proof_Name}\")"
+    },
+    "PreciseDecimal": {
+      "prefix": "PreciseDecimal",
+      "body": "PreciseDecimal(\"${1:number}\")"
+    },
+    "Some": {
+      "prefix": "Some",
+      "body": "Some($1)"
+    },
+    "Tuple": {
+      "prefix": "Tuple",
+      "body": "Tuple($1,)"
+    },
+    "Unit": {
+      "prefix": "Unit",
+      "body": "()"
+    }
   },
-  "Take From Worktop by Amount": {
-    "scope": "scope.rtm",
-    "prefix": "TAKE_FROM_WORKTOP_BY_AMOUNT",
-    "body": "TAKE_FROM_WORKTOP_BY_AMOUNT Decimal(\"${1:Amount}\") Address(\"$2\") Bucket(\"${3:Bucket Name}\");",
-    "description": "Takes resources from the worktop and into a bucket."
-  },
-  "Take From Worktop by Ids": {
-    "scope": "scope.rtm",
-    "prefix": "TAKE_FROM_WORKTOP_BY_IDS",
-    "body": "TAKE_FROM_WORKTOP_BY_IDS Set<NonFungibleId>(NonFungibleId(\"${1:id}\")) Address(\"$2\") Bucket(\"${3:Bucket Name}\");",
-    "description": "Takes resources from the worktop and into a bucket."
-  },
-  "Return to Worktop": {
-    "scope": "scope.rtm",
-    "prefix": "RETURN_TO_WORKTOP",
-    "body": "RETURN_TO_WORKTOP Bucket(\"${1:Bucket Name}\");",
-    "description": "Returns a bucket to the transaction worktop."
-  },
-  "Assert Worktop Contains": {
-    "scope": "scope.rtm",
-    "prefix": "ASSERT_WORKTOP_CONTAINS",
-    "body": "ASSERT_WORKTOP_CONTAINS Address(\"$1\");",
-    "description": "Asserts that the transaction worktop contains some resource."
-  },
-  "Assert Worktop Contains by Amount": {
-    "scope": "scope.rtm",
-    "prefix": "ASSERT_WORKTOP_CONTAINS_BY_AMOUNT",
-    "body": "ASSERT_WORKTOP_CONTAINS_BY_AMOUNT Decimal(\"${1:Amount}\") Address(\"$2\");",
-    "description": "Asserts that the transaction worktop contains some resource."
-  },
-  "Assert Worktop Contains by Ids": {
-    "scope": "scope.rtm",
-    "prefix": "ASSERT_WORKTOP_CONTAINS_BY_IDS",
-    "body": "ASSERT_WORKTOP_CONTAINS_BY_IDS Set<NonFungibleId>(NonFungibleId(\"${1:id}\")) Address(\"$2\");",
-    "description": "Asserts that the transaction worktop contains some resource."
-  },
-  "Pop from Auth Zone": {
-    "scope": "scope.rtm",
-    "prefix": "POP_FROM_AUTH_ZONE",
-    "body": "POP_FROM_AUTH_ZONE Proof(\"${1:Proof Name}\");",
-    "description": "Pops a proof from the Auth Zone."
-  },
-  "Push to Auth Zone": {
-    "scope": "scope.rtm",
-    "prefix": "PUSH_TO_AUTH_ZONE",
-    "body": "PUSH_TO_AUTH_ZONE Proof(\"${1:Proof Name}\");",
-    "description": "Pushes a proof to the auth zone."
-  },
-  "Create Proof from Auth Zone": {
-    "scope": "scope.rtm",
-    "prefix": "CREATE_PROOF_FROM_AUTH_ZONE",
-    "body": "CREATE_PROOF_FROM_AUTH_ZONE Address(\"$1\") Proof(\"${2:Proof Name}\");",
-    "description": "Creates a proof from the Auth Zone."
-  },
-  "Create Proof from Auth Zone by Amount": {
-    "scope": "scope.rtm",
-    "prefix": "CREATE_PROOF_FROM_AUTH_ZONE_BY_AMOUNT",
-    "body": "CREATE_PROOF_FROM_AUTH_ZONE_BY_AMOUNT Decimal(\"${1:Amount}\") Address(\"$2\") Proof(\"${3:Proof Name}\");",
-    "description": "Creates a proof from the Auth Zone."
-  },
-  "Create Proof from Auth Zone by Ids": {
-    "scope": "scope.rtm",
-    "prefix": "CREATE_PROOF_FROM_AUTH_ZONE_BY_IDS",
-    "body": "CREATE_PROOF_FROM_AUTH_ZONE_BY_IDS Set<NonFungibleId>(NonFungibleId(\"${1:id}\")) Address(\"$2\") Proof(\"${3:Proof Name}\");",
-    "description": "Creates a proof from the Auth Zone."
-  },
-  "Create Proof from Bucket": {
-    "scope": "scope.rtm",
-    "prefix": "CREATE_PROOF_FROM_BUCKET",
-    "body": "CREATE_PROOF_FROM_BUCKET Bucket(\"${1:Bucket Name}\") Proof(\"${2:Proof Name}\");",
-    "description": "Creates a proof from Bucket."
-  },
-  "Clone Proof": {
-    "scope": "scope.rtm",
-    "prefix": "CLONE_PROOF",
-    "body": "CLONE_PROOF Proof(\"${1:Original Proof Name}\") Proof(\"${2:New Proof Name}\");",
-    "description": "Clones an existing proof."
-  },
-  "Drop Proof": {
-    "scope": "scope.rtm",
-    "prefix": "DROP_PROOF",
-    "body": "DROP_PROOF Proof(\"${1:Proof Name}\");",
-    "description": "Drops a Proof."
-  },
-  "Drop All Proof": {
-    "scope": "scope.rtm",
-    "prefix": "DROP_ALL_PROOF",
-    "body": "DROP_ALL_PROOF;",
-    "description": "Drops all Proofs."
-  },
-  "Clear Auth Zone": {
-    "scope": "scope.rtm",
-    "prefix": "CLEAR_AUTH_ZONE",
-    "body": "CLEAR_AUTH_ZONE;",
-    "description": "Drops all proofs from the Auth Zone."
-  },
-  "Publish Package with Owner": {
-    "scope": "scope.rtm",
-    "prefix": "PUBLISH_PACKAGE_WITH_OWNER",
-    "body": "PUBLISH_PACKAGE_WITH_OWNER Blob(\"${1:Package WASM Blob}\") Blob(\"${2:Package ABI Blob}\") NonFungibleAddress(\"${3:Owner Resource Address}\", ${4:Owner Non-Fungible Id);",
-    "description": "Publishes a package."
-  },
-  "Mint Fungible": {
-    "scope": "scope.rtm",
-    "prefix": "MINT_FUNGIBLE",
-    "body": "MINT_FUNGIBLE Address(\"${1:Resource Address}\") Decimal(\"${2:Amount}\");",
-    "description": "Mints a fungible token."
-  },
-  "Burn Bucket": {
-    "scope": "scope.rtm",
-    "prefix": "BURN_BUCKET",
-    "body": "BURN_BUCKET Bucket(\"${1:Bucket Name}\");",
-    "description": "Burns a Bucket."
-  },
-  "Create Resource": {
-    "scope": "scope.rtm",
-    "prefix": "CREATE_RESOURCE",
-    "body": "CREATE_RESOURCE Enum(\"Fungible\", ${1:Token Divisibility}u8) Map<String, String>(String(\"name\"), String(\"${2:Token Name}\")) Map<Enum, Tuple>(Enum(\"Withdraw\"), Tuple(Enum(\"AllowAll\"), Enum(\"LOCKED\"))) Some(Enum(\"Fungible\", Decimal(\"${3:Initial Supply}\")))",
-    "description": "Creates a new resource."
-  },
-  // ==================
-  // Common Operations
-  // ==================
-  "Lock Fee": {
-    "scope": "scope.rtm",
-    "prefix": "LOCK_FEE",
-    "body": "CALL_METHOD Address(\"${1:Account Component}\") \"lock_fee\" Decimal(\"${2:Fee to Lock}\");",
-    "description": "Locks a fee for the transaction."
-  },
-  "Withdraw from Account": {
-    "scope": "scope.rtm",
-    "prefix": "WITHDRAW_FROM_ACCOUNT",
-    "body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw\" Address(\"${2:Resource to Withdraw}\") Decimal(\"${3:Amount}\"));",
-    "description": "Withdraws funds from an account."
-  },
-  "Withdraw Non Fungibles from Account by Ids": {
-    "scope": "scope.rtm",
-    "prefix": "WITHDRAW_NON_FUNGIBLES_FROM_ACCOUNT",
-    "body": "CALL_METHOD Address(\"${1:Account Component}\") \"withdraw_non_fungibles\" Address(\"${2:Resource to Withdraw}\") Array<NonFungibleLocalId>(NonFungibleLocalId(\"${3:id}\"));",
-    "description": "Withdraws funds from an account."
-  },
-  "Create Proof of Amount from Account": {
-    "scope": "scope.rtm",
-    "prefix": "CREATE_PROOF_OF_AMOUNT_FROM_ACCOUNT",
-    "body": "CALL_METHOD Address(\"${1:account_component_address}\") \"create_proof_of_amount\" Address(\"${2:resource_address}\") Decimal(\"${3:amount}\");",
-    "description": "Creates a proof from an account."
-  },
-  "Create Proof of Non Fungibles from Account": {
-    "scope": "scope.rtm",
-    "prefix": "CREATE_PROOF_OF_NON_FUNGIBLES_FROM_ACCOUNT",
-    "body": "CALL_METHOD Address(\"${1:account_component_address}\") \"create_proof_of_non_fungibles\" Address(\"${2:resource_address}\") Array<NonFungibleLocalId>(NonFungibleLocalId(\"${3:some_non_fungible_local_id}\"));",
-    "description": "Creates a proof of non fungibles from an account."
-  },
-  // =============
-  // Common Types
-  // =============
-  "Blob": {
-    "scope": "scope.rtm",
-    "prefix": "Blob",
-    "body": "Blob(\"${1:Blob Hash}\")"
-  },
-  "Expression": {
-    "scope": "scope.rtm",
-    "prefix": "Expression",
-    "body": "Expression(\"${1|ENTIRE_WORKTOP,ENTIRE_AUTH_ZONE|}\")"
-  },
-  "Hash": {
-    "scope": "scope.rtm",
-    "prefix": "Hash",
-    "body": "Hash(\"${1:Hash Hex}\")"
-  },
-  "NonFungibleAddress": {
-    "scope": "scope.rtm",
-    "prefix": "NonFungibleAddress",
-    "body": "NonFungibleAddress(\"${1:Resource Address}\", ${2:Non-Fungible Id})"
-  },
-  "NonFungibleId": {
-    "scope": "scope.rtm",
-    "prefix": "NonFungibleId",
-    "body": "NonFungibleId(${1:NonFungibleId})"
-  },
-  "Bucket": {
-    "scope": "scope.rtm",
-    "prefix": "Bucket",
-    "body": "Bucket(\"${1:Bucket Name}\")"
-  },
-  "Proof": {
-    "scope": "scope.rtm",
-    "prefix": "Proof",
-    "body": "Proof(\"${1:Proof Name}\")"
-  },
-  "ResourceAddress": {
-    "scope": "scope.rtm",
-    "prefix": "ResourceAddress",
-    "body": "Address(\"${1:Resource Address}\")"
-  },
-  "ComponentAddress": {
-    "scope": "scope.rtm",
-    "prefix": "ComponentAddress",
-    "body": "Address(\"${1:Component Address}\")"
-  },
-  "PackageAddress": {
-    "scope": "scope.rtm",
-    "prefix": "PackageAddress",
-    "body": "Address(\"${1:Package Address}\")"
-  },
-  "Decimal": {
-    "scope": "scope.rtm",
-    "prefix": "Decimal",
-    "body": "Decimal(\"${1:number}\")"
-  },
-  "PreciseDecimal": {
-    "scope": "scope.rtm",
-    "prefix": "PreciseDecimal",
-    "body": "PreciseDecimal(\"${1:number}\")"
-  },
-  "Tuple": {
-    "scope": "scope.rtm",
-    "prefix": "Tuple",
-    "body": "Tuple($2)"
-  },
-  "Array": {
-    "scope": "scope.rtm",
-    "prefix": "Array",
-    "body": "Array<${1|I8,I16,I32,I64,I128,U8,U16,U32,U64,U128,Decimal,PreciseDecimal,String,Struct,Enum,Option,Some,None,Ok,Err,Array,Tuple,List,Set,Map,ComponentAddress,PackageAddress,ResourceAddress,Hash,Bucket,Proof,NonFungibleId,NonFungibleAddress,Bytes|}>($2)"
-  },
-  "Enum": {
-    "scope": "scope.rtm",
-    "prefix": "Enum",
-    "body": "Enum(\"${1:Variant Name}\", \"${2:Optional Values}\")"
-  },
-  "Vault": {
-    "scope": "scope.rtm",
-    "prefix": "Vault",
-    "body": "Vault(\"${1:Vault Id}\")"
-  },
-  "Component": {
-    "scope": "scope.rtm",
-    "prefix": "Component",
-    "body": "Component(\"${1:Component Id}\")"
-  },
-  "KeyValueStore": {
-    "scope": "scope.rtm",
-    "prefix": "KeyValueStore",
-    "body": "KeyValueStore(\"${1:KeyValueStore Id}\")"
-  },
-  "Bytes": {
-    "scope": "scope.rtm",
-    "prefix": "Bytes",
-    "body": "Bytes(\"${1:Bytes Hex}\")"
-  },
-  "EcdsaSecp256k1PublicKey": {
-    "scope": "scope.rtm",
-    "prefix": "EcdsaSecp256k1PublicKey",
-    "body": "EcdsaSecp256k1PublicKey(\"${1:Ecdsa Secp256k1 Public Key}\")"
-  },
-  "EcdsaSecp256k1Signature": {
-    "scope": "scope.rtm",
-    "prefix": "EcdsaSecp256k1Signature",
-    "body": "EcdsaSecp256k1Signature(\"${1:Ecdsa Secp256k1 Signature}\")"
-  },
-  "EddsaEd25519PublicKey": {
-    "scope": "scope.rtm",
-    "prefix": "EddsaEd25519PublicKey",
-    "body": "EddsaEd25519PublicKey(\"${1:Eddsa Ed25519 Public Key}\")"
-  },
-  "EddsaEd25519Signature": {
-    "scope": "scope.rtm",
-    "prefix": "EddsaEd25519Signature",
-    "body": "EddsaEd25519Signature(\"${1:Eddsa Ed25519 Signature}\")"
-  },
-  // =================
-  // Useful Constants
-  // =================
-  "XRD": {
-    "scope": "scope.rtm",
-    "prefix": "XRD",
-    "body": "resource_sim1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzqu57yag"
-  },
-  "System Component": {
-    "scope": "scope.rtm",
-    "prefix": "SYSTEM_COMPONENT",
-    "body": "component_sim1qgqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpqgyhcl2"
+
+  "UsefulConstants": {
+    "Faucet resim": {
+      "prefix": "Faucet resim",
+      "body": "component_sim1cptxxxxxxxxxfaucetxxxxxxxxx000527798379xxxxxxxxxhkrefh"
+    },
+    "Faucet Stokenet": {
+      "prefix": "Faucet Stokenet",
+      "body": "component_tdx_2_1cptxxxxxxxxxfaucetxxxxxxxxx000527798379xxxxxxxxxyulkzl"
+    },
+    "XRD Mainnet": {
+      "prefix": "XRD Mainnet",
+      "body": "resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd"
+    },
+    "XRD resim": {
+      "prefix": "XRD resim",
+      "body": "resource_sim1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxakj8n3"
+    },
+    "XRD Stokenet": {
+      "prefix": "XRD Stokenet",
+      "body": "resource_tdx_2_1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxtfd2jc"
+    }
   }
 }
