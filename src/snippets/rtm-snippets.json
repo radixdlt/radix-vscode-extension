@@ -32,7 +32,9 @@
       "body": [
         "ASSERT_WORKTOP_CONTAINS_NON_FUNGIBLES",
         "\tAddress(\"$2\")",
-        "\tArray<NonFungibleLocalId>(NonFungibleLocalId(\"${1:id}\"),)",
+        "\tArray<NonFungibleLocalId>(",
+        "\t\tNonFungibleLocalId(\"${1:id}\"),",
+        "\t)",
         ";"
       ],
       "description": "Asserts that the transaction worktop contains some resource."
@@ -101,7 +103,9 @@
       "body": [
         "CREATE_PROOF_FROM_AUTH_ZONE_OF_NON_FUNGIBLES",
         "\tAddress(\"$2\")",
-        "\tArray<NonFungibleLocalId>(NonFungibleLocalId(\"${1:id}\"),)",
+        "\tArray<NonFungibleLocalId>(",
+        "\t\tNonFungibleLocalId(\"${1:id}\"),",
+        "\t)",
         "\tProof(\"${3:Proof_Name}\")",
         ";"
       ],
@@ -148,7 +152,7 @@
         "MINT_NON_FUNGIBLE",
         "\tAddress(\"${1:Resource_Address}\")",
         "\tMap<NonFungibnleLocalId, Tuple>(",
-        "\t\tNonFungibleLocalId(\"${2:Non_Fungible_Id}\") => Tuple(Tuple()),",
+        "\t\tNonFungibleLocalId(\"${2:id}\") => Tuple(Tuple()),",
         "\t)",
         ";"
       ],
@@ -207,7 +211,9 @@
       "body": [
         "TAKE_NON_FUNGIBLES_FROM_WORKTOP",
         "\tAddress(\"$1\")",
-        "\tArray<NonFungibleLocalId>(NonFungibleLocalId(\"${2:id}\"))",
+        "\tArray<NonFungibleLocalId>(",
+        "\t\tNonFungibleLocalId(\"${2:id}\"),",
+        "\t)",
         "\tBucket(\"${3:Bucket_Name}\")",
         ";"
       ],
@@ -235,7 +241,9 @@
         "\tAddress(\"${1:account_component_address}\")",
         "\t\"create_proof_of_non_fungibles\"",
         "\tAddress(\"${2:resource_address}\")",
-        "\tArray<NonFungibleLocalId>(NonFungibleLocalId(\"${3:some_non_fungible_local_id}\"),)",
+        "\tArray<NonFungibleLocalId>(",
+        "\t\tNonFungibleLocalId(\"${3:id}\"),",
+        "\t)",
         ";"
       ],
       "description": "Create a proof of non-fungibles from an account."
@@ -305,7 +313,9 @@
         "\tAddress(\"${1:Account_Component}\")",
         "\t\"withdraw_non_fungibles\"",
         "\tAddress(\"${2:Resource_to_Withdraw}\")",
-        "\tArray<NonFungibleLocalId>(NonFungibleLocalId(\"${3:id}\"),)",
+        "\tArray<NonFungibleLocalId>(",
+        "\t\tNonFungibleLocalId(\"${3:id}\"),",
+        "\t)",
         ";"
       ],
       "description": "Withdraw non-fungible tokens from an account."
@@ -411,7 +421,7 @@
     },
     "Tuple": {
       "prefix": "Tuple",
-      "body": "Tuple($2,)"
+      "body": "Tuple($1,)"
     },
     "Unit": {
       "prefix": "Unit",
