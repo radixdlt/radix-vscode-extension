@@ -1,87 +1,78 @@
 {
-    "Use Scrypto": {
-        "prefix": "scrypto",
-        "body": [
-            "use scrypto::prelude::*;",
-            "$1"
-        ],
-        "description": "Import the Scrypto Library"
-    },
-    "Create Blueprint": {
-        "prefix": "blueprint",
-        "body": [
-            "use scrypto::prelude::*;",
-            "",
-            "#[blueprint]",
-            " mod ${1: module_name} { ",
-            " struct ${2:BlueprintName} {",
-            " }",
-            "",
-            " impl ${2:BlueprintName} {",
-            "   pub fn ${3:new}() -> Global<${2:BlueprintName}> {",
-            "     Self {}",
-            "     .instantiate()",
-            "     .prepare_to_globalize(OwnerRole::None)",
-            "     .globalize()",
-            "   }",
-            " }",
-            "}",
-            "$0"
-        ],
-        "description": "Scaffold a Scrypto blueprint"
-    },
-    "Create Token": {
-        "prefix": "token",
-        "body": [
-            "let ${1:token_name}: Bucket = ResourceBuilder::new_fungible(OwnerRole::${2|None,Fixed,Updatable|})",
-            "     .divisibility(DIVISIBILITY_MAXIMUM)",
-            "     .metadata( metadata! {",
-            "         init { ",
-            "               \"name\" => \"${3:Token Name}\", locked;",
-            "               \"symbol\" => \"${4:SYM}\", locked;",
-            "          }",
-            "     })",
-            "     .mint_initial_supply($5)",
-            "     .into();",
-            "$0"
-        ],
-        "description": "Scaffold a fungible token"
-    },
-    "Create Fungible Badge": {
-        "prefix": "badge",
-        "body": [
-            "let ${1:badge_name}: Bucket = ResourceBuilder::new_fungible()",
-            "     .divisibility(DIVISIBILITY_NONE)",
-            "     .metadata( metadata! {",
-            "         init { ",
-            "               \"name\" => \"${2:Admin Badge}\", locked;",
-            "          }",
-            "     })",
-            "     .mint_initial_supply(${3:1})",
-            "     .into();",
-            "$0"
-        ],
-        "description": "Scaffold a fungible badge"
-    },
-    "Struct Vault": {
-        "prefix": "vault_struct",
-        "body": [
-            "${1:vault_name}: Vault,"
-        ],
-        "description": "Scaffold a fungible badge"
-    },
-    "Vault Empty Constructor": {
-        "prefix": "vault_empty",
-        "body": [
-            "${1:vault_name}: Vault::new(${2:empty_vault}),"
-        ],
-        "description": "Scaffold a fungible badge"
-    },
-    "Vault w/Bucket Constructor": {
-        "prefix": "vault_w_bucket",
-        "body": [
-            "${1:vault_name}: Vault::with_bucket(${2:bucket_name}),"
-        ],
-        "description": "Scaffold a fungible badge"
-    }
+  "Use Scrypto": {
+    "prefix": "scrypto",
+    "body": ["use scrypto::prelude::*;", "$1"],
+    "description": "Import the Scrypto Library"
+  },
+  "Create Blueprint": {
+    "prefix": "blueprint",
+    "body": [
+      "use scrypto::prelude::*;",
+      "",
+      "#[blueprint]",
+      " mod ${1: module_name} { ",
+      " struct ${2:BlueprintName} {",
+      " }",
+      "",
+      " impl ${2:BlueprintName} {",
+      "   pub fn ${3:new}() -> Global<${2:BlueprintName}> {",
+      "     Self {}",
+      "     .instantiate()",
+      "     .prepare_to_globalize(OwnerRole::None)",
+      "     .globalize()",
+      "   }",
+      " }",
+      "}",
+      "$0"
+    ],
+    "description": "Scaffold a Scrypto blueprint"
+  },
+  "Create Token": {
+    "prefix": "token",
+    "body": [
+      "let ${1:token_name}: Bucket = ResourceBuilder::new_fungible(OwnerRole::${2|None,Fixed,Updatable|})",
+      "     .divisibility(DIVISIBILITY_MAXIMUM)",
+      "     .metadata( metadata! {",
+      "         init { ",
+      "               \"name\" => \"${3:Token Name}\", locked;",
+      "               \"symbol\" => \"${4:SYM}\", locked;",
+      "          }",
+      "     })",
+      "     .mint_initial_supply($5)",
+      "     .into();",
+      "$0"
+    ],
+    "description": "Scaffold a fungible token"
+  },
+  "Create Fungible Badge": {
+    "prefix": "badge",
+    "body": [
+      "let ${1:badge_name}: Bucket = ResourceBuilder::new_fungible()",
+      "     .divisibility(DIVISIBILITY_NONE)",
+      "     .metadata( metadata! {",
+      "         init { ",
+      "               \"name\" => \"${2:Admin Badge}\", locked;",
+      "          }",
+      "     })",
+      "     .mint_initial_supply(${3:1})",
+      "     .into();",
+      "$0"
+    ],
+    "description": "Scaffold a fungible badge"
+  },
+  "Struct Vault": {
+    "prefix": "vault_struct",
+    "body": ["${1:vault_name}: Vault,"],
+    "description": "Scaffold a fungible badge"
+  },
+  "Vault Empty Constructor": {
+    "prefix": "vault_empty",
+    "body": ["${1:vault_name}: Vault::new(${2:empty_vault}),"],
+    "description": "Scaffold a fungible badge"
+  },
+  "Vault w/Bucket Constructor": {
+    "prefix": "vault_w_bucket",
+    "body": ["${1:vault_name}: Vault::with_bucket(${2:bucket_name}),"],
+    "description": "Scaffold a fungible badge"
+  }
 }

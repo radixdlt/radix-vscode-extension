@@ -24,10 +24,28 @@
   "contributes": {
     "commands": [
       {
-        "command": "radix-developer-tools.helloScrypto",
-        "title": "Hello Scrypto"
+        "command": "resim.submit-transaction",
+        "title": "Submit to Resim"
+      },
+      {
+        "command": "stokenet.submit-transaction",
+        "title": "Submit to Stokenet"
       }
     ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "resourceExtname == '.rtm'",
+          "command": "stokenet.submit-transaction",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceExtname == '.rtm'",
+          "command": "resim.submit-transaction",
+          "group": "navigation"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "radixTransactionManifest",
@@ -110,6 +128,7 @@
     "@vscode/test-electron": "^2.3.8",
     "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.56.0",
+    "prettier": "3.3.3",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.89.0",
