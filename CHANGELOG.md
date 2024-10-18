@@ -3,6 +3,8 @@
 ## 0.0.6
 
 - Add "Submit Transaction to Stokenet" and "Submit Transaction to Resim" items to context menu of `*.rtm` files
+- Fixed snippets to correctly reflect the current Radix Engine version.
+- Improved snippet formatting.
 
 ## 0.0.5
 
