@@ -5,7 +5,7 @@
       "body": [
         "ALLOCATE_GLOBAL_ADDRESS",
         "\tAddress(\"$1\")",
-        "\t\"${2:Blueprint_Name}\"",
+        "\t\"${2:blueprint_name}\"",
         "\tAddressReservation(\"${3:address_reservation}\")",
         "\tNamedAddress(\"${4:address}\")",
         ";"
@@ -41,14 +41,14 @@
     },
     "Burn Resource": {
       "prefix": "BURN_RESOURCE",
-      "body": ["BURN_RESOURCE", "\tBucket(\"${1:Bucket_Name}\")", ";"],
+      "body": ["BURN_RESOURCE", "\tBucket(\"${1:bucket_name}\")", ";"],
       "description": "Burns a Bucket of a Resource."
     },
     "Call Function": {
       "prefix": "CALL_FUNCTION",
       "body": [
         "CALL_FUNCTION",
-        "\tAddress(\"${1:Package_Address}\")",
+        "\tAddress(\"${1:package}\")",
         "\t\"${2:Blueprint_Name}\"",
         "\t\"${3:Function_Name}\"",
         "\t${4:Args}",
@@ -60,7 +60,7 @@
       "prefix": "CALL_METHOD",
       "body": [
         "CALL_METHOD",
-        "\tAddress(\"${1:Component_Address}\")",
+        "\tAddress(\"${1:component}\")",
         "\t\"${2:Method_Name}\"",
         "\t${3:Args}",
         ";"
@@ -71,8 +71,8 @@
       "prefix": "CLONE_PROOF",
       "body": [
         "CLONE_PROOF",
-        "\tProof(\"${1:Original_Proof_Name}\")",
-        "\tProof(\"${2:New_Proof_Name}\")",
+        "\tProof(\"${1:original_proof_name}\")",
+        "\tProof(\"${2:new_proof_name}\")",
         ";"
       ],
       "description": "Clones an existing proof."
@@ -82,7 +82,7 @@
       "body": [
         "CREATE_PROOF_FROM_AUTH_ZONE_OF_ALL",
         "\tAddress(\"$1\")",
-        "\tProof(\"${2:Proof_Name}\")",
+        "\tProof(\"${2:proof_name}\")",
         ";"
       ],
       "description": "Creates a proof of a full resource amount on the Auth Zone."
@@ -92,8 +92,8 @@
       "body": [
         "CREATE_PROOF_FROM_AUTH_ZONE_OF_AMOUNT",
         "\tAddress(\"$2\")",
-        "\tDecimal(\"${1:Amount}\")",
-        "\tProof(\"${3:Proof_Name}\")",
+        "\tDecimal(\"${1:amount}\")",
+        "\tProof(\"${3:proof_name}\")",
         ";"
       ],
       "description": "Creates a proof of specified amount from the Auth Zone."
@@ -106,7 +106,7 @@
         "\tArray<NonFungibleLocalId>(",
         "\t\tNonFungibleLocalId(\"${1:id}\"),",
         "\t)",
-        "\tProof(\"${3:Proof_Name}\")",
+        "\tProof(\"${3:proof_name}\")",
         ";"
       ],
       "description": "Creates a non-fungible proof from on Auth Zone."
@@ -115,8 +115,8 @@
       "prefix": "CREATE_PROOF_FROM_BUCKET_OF_ALL",
       "body": [
         "CREATE_PROOF_FROM_BUCKET_OF_ALL",
-        "\tBucket(\"${1:Bucket_Name}\")",
-        "\tProof(\"${2:Proof_Name}\")",
+        "\tBucket(\"${1:bucket_name}\")",
+        "\tProof(\"${2:proof_name}\")",
         ";"
       ],
       "description": "Creates a proof of a full resource amount in a Bucket."
@@ -140,8 +140,8 @@
       "prefix": "MINT_FUNGIBLE",
       "body": [
         "MINT_FUNGIBLE",
-        "\tAddress(\"${1:Resource_Address}\")",
-        "\tDecimal(\"${2:Amount}\")",
+        "\tAddress(\"${1:resource}\")",
+        "\tDecimal(\"${2:amount}\")",
         ";"
       ],
       "description": "Mints a fungible token."
@@ -150,8 +150,8 @@
       "prefix": "MINT_NON_FUNGIBLE",
       "body": [
         "MINT_NON_FUNGIBLE",
-        "\tAddress(\"${1:Resource_Address}\")",
-        "\tMap<NonFungibnleLocalId, Tuple>(",
+        "\tAddress(\"${1:resource}\")",
+        "\tMap<NonFungibleLocalId, Tuple>(",
         "\t\tNonFungibleLocalId(\"${2:id}\") => Tuple(Tuple()),",
         "\t)",
         ";"
@@ -162,7 +162,7 @@
       "prefix": "MINT_RUID_NON_FUNGIBLE",
       "body": [
         "MINT_RUID_NON_FUNGIBLE",
-        "\tAddress(\"${1:Resource_Address}\")",
+        "\tAddress(\"${1:resource}\")",
         "\tArray<Tuple>(",
         "\t\tTuple(Tuple()),",
         "\t)",
@@ -172,17 +172,17 @@
     },
     "Pop from Auth Zone": {
       "prefix": "POP_FROM_AUTH_ZONE",
-      "body": ["POP_FROM_AUTH_ZONE", "\tProof(\"${1:Proof_Name}\")", ";"],
+      "body": ["POP_FROM_AUTH_ZONE", "\tProof(\"${1:proof_name}\")", ";"],
       "description": "Pops a proof from the Auth Zone."
     },
     "Push to Auth Zone": {
       "prefix": "PUSH_TO_AUTH_ZONE",
-      "body": ["PUSH_TO_AUTH_ZONE", "\tProof(\"${1:Proof_Name}\")", ";"],
+      "body": ["PUSH_TO_AUTH_ZONE", "\tProof(\"${1:proof_name}\")", ";"],
       "description": "Pushes a proof to the auth zone."
     },
     "Return to Worktop": {
       "prefix": "RETURN_TO_WORKTOP",
-      "body": ["RETURN_TO_WORKTOP", "\tBucket(\"${1:Bucket_Name}\")", ";"],
+      "body": ["RETURN_TO_WORKTOP", "\tBucket(\"${1:bucket_name}\")", ";"],
       "description": "Returns a bucket to the transaction worktop."
     },
     "Take All From Worktop": {
@@ -190,7 +190,7 @@
       "body": [
         "TAKE_ALL_FROM_WORKTOP",
         "\tAddress(\"$1\")",
-        "\tBucket(\"${2:Bucket_Name}\")",
+        "\tBucket(\"${2:bucket_name}\")",
         ";"
       ],
       "description": "Takes all or a resource from the worktop into a new bucket."
@@ -200,8 +200,8 @@
       "body": [
         "TAKE_FROM_WORKTOP",
         "\tAddress(\"$1\")",
-        "\tDecimal(\"${2:Amount}\")",
-        "\tBucket(\"${3:Bucket_Name}\")",
+        "\tDecimal(\"${2:amount}\")",
+        "\tBucket(\"${3:bucket_name}\")",
         ";"
       ],
       "description": "Takes an amount of a resource from the worktop and into a bucket."
@@ -214,7 +214,7 @@
         "\tArray<NonFungibleLocalId>(",
         "\t\tNonFungibleLocalId(\"${2:id}\"),",
         "\t)",
-        "\tBucket(\"${3:Bucket_Name}\")",
+        "\tBucket(\"${3:bucket_name}\")",
         ";"
       ],
       "description": "Takes resources from the worktop and into a bucket."
@@ -226,9 +226,9 @@
       "prefix": "CREATE_PROOF_OF_AMOUNT_FROM_ACCOUNT",
       "body": [
         "CALL_METHOD",
-        "\tAddress(\"${1:account_component_address}\")",
+        "\tAddress(\"${1:account}\")",
         "\t\"create_proof_of_amount\"",
-        "\tAddress(\"${2:resource_address}\")",
+        "\tAddress(\"${2:resource}\")",
         "\tDecimal(\"${3:amount}\")",
         ";"
       ],
@@ -238,9 +238,9 @@
       "prefix": "CREATE_PROOF_OF_NON_FUNGIBLES_FROM_ACCOUNT",
       "body": [
         "CALL_METHOD",
-        "\tAddress(\"${1:account_component_address}\")",
+        "\tAddress(\"${1:account}\")",
         "\t\"create_proof_of_non_fungibles\"",
-        "\tAddress(\"${2:resource_address}\")",
+        "\tAddress(\"${2:resource}\")",
         "\tArray<NonFungibleLocalId>(",
         "\t\tNonFungibleLocalId(\"${3:id}\"),",
         "\t)",
@@ -252,9 +252,9 @@
       "prefix": "DEPOSIT_TO_ACCOUNT",
       "body": [
         "CALL_METHOD",
-        "\tAddress(\"${1:Account_Component}\")",
+        "\tAddress(\"${1:account}\")",
         "\t\"deposit\"",
-        "\tBucket(\"${2:Bucket_Name}\")",
+        "\tBucket(\"${2:bucket_name}\")",
         ";"
       ],
       "description": "Deposit funds into an account."
@@ -263,10 +263,10 @@
       "prefix": "DEPOSIT_BATCH_TO_ACCOUNT",
       "body": [
         "CALL_METHOD",
-        "\tAddress(\"${1:Account_Component}\")",
+        "\tAddress(\"${1:account}\")",
         "\t\"deposit_batch\"",
         "\tArray<Bucket>(",
-        "\t\tBucket(\"${2:Bucket_Name}\"),",
+        "\t\tBucket(\"${2:bucket_name}\"),",
         "\t)",
         ";"
       ],
@@ -276,7 +276,7 @@
       "prefix": "DEPOSIT_ENTIRE_WORKTOP_TO_ACCOUNT",
       "body": [
         "CALL_METHOD",
-        "\tAddress(\"${1:Account_Component}\")",
+        "\tAddress(\"${1:account}\")",
         "\t\"deposit_batch\"",
         "\tExpression(\"ENTIRE_WORKTOP\")",
         ";"
@@ -287,9 +287,9 @@
       "prefix": "LOCK_FEE",
       "body": [
         "CALL_METHOD",
-        "\tAddress(\"${1:Account_Component}\")",
+        "\tAddress(\"${1:account}\")",
         "\t\"lock_fee\"",
-        "\tDecimal(\"${2:Fee_to_Lock}\")",
+        "\tDecimal(\"${2:amount}\")",
         ";"
       ],
       "description": "Lock a fee for the transaction."
@@ -298,10 +298,10 @@
       "prefix": "WITHDRAW_FROM_ACCOUNT",
       "body": [
         "CALL_METHOD",
-        "\tAddress(\"${1:Account_Component}\")",
+        "\tAddress(\"${1:account}\")",
         "\t\"withdraw\"",
-        "\tAddress(\"${2:Resource_to_Withdraw}\")",
-        "\tDecimal(\"${3:Amount}\")",
+        "\tAddress(\"${2:resource}\")",
+        "\tDecimal(\"${3:amount}\")",
         ";"
       ],
       "description": "Withdraw tokens from an account."
@@ -310,9 +310,9 @@
       "prefix": "WITHDRAW_NON_FUNGIBLES_FROM_ACCOUNT",
       "body": [
         "CALL_METHOD",
-        "\tAddress(\"${1:Account_Component}\")",
+        "\tAddress(\"${1:account}\")",
         "\t\"withdraw_non_fungibles\"",
-        "\tAddress(\"${2:Resource_to_Withdraw}\")",
+        "\tAddress(\"${2:resource}\")",
         "\tArray<NonFungibleLocalId>(",
         "\t\tNonFungibleLocalId(\"${3:id}\"),",
         "\t)",
@@ -325,15 +325,15 @@
   "CommonTypes": {
     "Address Component": {
       "prefix": "Address Component",
-      "body": "Address(\"${1:Component_Address}\")"
+      "body": "Address(\"${1:component}\")"
     },
     "Address Package": {
       "prefix": "Address Package",
-      "body": "Address(\"${1:Package_Address}\")"
+      "body": "Address(\"${1:package}\")"
     },
     "Address Resource": {
       "prefix": "Address Resource",
-      "body": "Address(\"${1:Resource_Address}\")"
+      "body": "Address(\"${1:resource}\")"
     },
     "AddressReservation": {
       "prefix": "AddressReservation",
@@ -345,15 +345,15 @@
     },
     "Blob": {
       "prefix": "Blob",
-      "body": "Blob(\"${1:Blob_Hash}\")"
+      "body": "Blob(\"${1:blob_hash}\")"
     },
     "Bucket": {
       "prefix": "Bucket",
-      "body": "Bucket(\"${1:Bucket_Name}\")"
+      "body": "Bucket(\"${1:bucket_name}\")"
     },
     "Bytes": {
       "prefix": "Bytes",
-      "body": "Bytes(\"${1:Bytes_Hex}\")"
+      "body": "Bytes(\"${1:bytes_hex}\")"
     },
     "Decimal": {
       "prefix": "Decimal",
@@ -361,7 +361,7 @@
     },
     "Enum": {
       "prefix": "Enum",
-      "body": "Enum(\"${1:Variant_Name}\", \"${2:Optional_Values}\")"
+      "body": "Enum(\"${1:variant_name}\", \"${2:optional_values}\")"
     },
     "Err": {
       "prefix": "Err",
@@ -373,7 +373,7 @@
     },
     "Hash": {
       "prefix": "Hash",
-      "body": "Hash(\"${1:Hash_Hex}\")"
+      "body": "Hash(\"${1:hash_hex}\")"
     },
     "Map": {
       "prefix": "Map",
@@ -385,23 +385,23 @@
     },
     "NonFungibleGlobalId": {
       "prefix": "NonFungibleGlobalId",
-      "body": "NonFungibleGlobalId(\"${1:Resource_Address}:${2:NonFungibleLocalId}\")"
+      "body": "NonFungibleGlobalId(\"${1:resource_address}:${2:local_id}\")"
     },
     "NonFungibleLocalId Bytes": {
       "prefix": "NonFungibleLocalId Bytes",
-      "body": "NonFungibleLocalId(\"${1:NonFungibleLocalId}]\")"
+      "body": "NonFungibleLocalId(\"${1:id}]\")"
     },
     "NonFungibleLocalId Integer": {
       "prefix": "NonFungibleLocalId Integer",
-      "body": "NonFungibleLocalId(\"#${1:NonFungibleLocalId}#\")"
+      "body": "NonFungibleLocalId(\"#${1:id}#\")"
     },
     "NonFungibleLocalId RUID": {
       "prefix": "NonFungibleLocalId RUID",
-      "body": "NonFungibleLocalId(\"{${1:NonFungibleLocalId}}\")"
+      "body": "NonFungibleLocalId(\"{${1:id}}\")"
     },
     "NonFungibleLocalId String": {
       "prefix": "NonFungibleLocalId String",
-      "body": "NonFungibleLocalId(\"<${1:NonFungibleLocalId}>\")"
+      "body": "NonFungibleLocalId(\"<${1:id}>\")"
     },
     "Ok": {
       "prefix": "Ok",
@@ -409,7 +409,7 @@
     },
     "Proof": {
       "prefix": "Proof",
-      "body": "Proof(\"${1:Proof_Name}\")"
+      "body": "Proof(\"${1:proof_name}\")"
     },
     "PreciseDecimal": {
       "prefix": "PreciseDecimal",
