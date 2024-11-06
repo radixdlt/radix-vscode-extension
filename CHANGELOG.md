@@ -1,10 +1,15 @@
 # Changelog
 
+## 0.0.7
+
+- Fix `*.rtm` snippet typos
+- Expand `scrypto blueprint` snippet to include more boilerplate code
+
 ## 0.0.6
 
 - Add "Submit Transaction to Stokenet" and "Submit Transaction to Resim" items to context menu of `*.rtm` files
-- Fixed snippets to correctly reflect the current Radix Engine version.
-- Improved snippet formatting.
+- Fix snippets to correctly reflect the current Radix Engine version
+- Improved snippet formatting
 
 ## 0.0.5
 
