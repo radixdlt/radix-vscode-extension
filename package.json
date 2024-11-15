@@ -30,6 +30,10 @@
       {
         "command": "stokenet.submit-transaction",
         "title": "Submit to Stokenet"
+      },
+      {
+        "command": "stokenet.deploy-package",
+        "title": "Deploy to Stokenet"
       }
     ],
     "menus": {
@@ -42,6 +46,16 @@
         {
           "when": "resourceExtname == '.rtm'",
           "command": "resim.submit-transaction",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceExtname == '.rpd'",
+          "command": "stokenet.deploy-package",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceExtname == '.wasm'",
+          "command": "stokenet.deploy-package",
           "group": "navigation"
         }
       ]
@@ -114,6 +128,7 @@
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
+    "format": "npx prettier . --write",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "vscode-test"
