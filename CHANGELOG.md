@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0
+
+- Add right-click context menu to `Cargo.toml` files to publish package to Stokenet or Resim.
+- Add right-click context menu to `*.wasm` and `*.rpd` files to publish package to Stokenet.
+
+
 ## 0.0.7
 
 - Fix `*.rtm` snippet typos
