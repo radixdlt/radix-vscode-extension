@@ -7,7 +7,6 @@ import {
   deployPackage,
   handlePackageDeploymentResponse,
 } from "./helpers/deploy-package";
-import * as fs from "fs";
 import { AnalyticsModule } from "./modules/analytics-module";
 import { ScryptoTreeDataProvider } from "./helpers/scrypto-tree-data-provider";
 import { getStokenetAccountWebView } from "./webviews/stokenet-account";
@@ -18,6 +17,10 @@ import {
 } from "./modules/stokenet-accounts-module";
 import { ResimModule } from "./modules/resim-module";
 import { treeItem } from "./helpers/tree-item";
+import { extname } from "path";
+import { isFile } from "./helpers/is-file";
+import { isFileWithExtension } from "./helpers/is-file-with-extension";
+import { findWasmPath } from "./helpers/find-wasm";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -46,7 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
   const stokenetCmd = [
     treeItem("New Account", "stokenet.new-account", account_icon),
     treeItem("Get XRD", "stokenet.faucet", transfer_icon),
-    treeItem("Deploy Package", "stokenet.deploy-package", publish_icon),
+    treeItem("Deploy Package", "stokenet.publish-package", publish_icon),
     treeItem("Open Dashboard", "stokenet.dashboard", dashboard_icon),
     treeItem("Open Dev Console", "stokenet.console", console_icon),
     treeItem(
@@ -136,18 +139,31 @@ export function activate(context: vscode.ExtensionContext) {
   // Resim Publish Package Command
   // TODO - add a check to see if the terminal location contains the scrypto-package
   context.subscriptions.push(
-    vscode.commands.registerCommand("resim.publish", async () => {
-      // Prompt for the relative path to the package
-      const packagePath = await prompts.relativePackagePath();
-      if (packagePath) {
+    vscode.commands.registerCommand("resim.publish", async (ev) => {
+      const selectedFile = ev && ev.path ? (ev.path as string) : undefined;
+      if (selectedFile) {
+        const isCargoToml = selectedFile.endsWith("Cargo.toml");
+        const parentPath = isCargoToml
+          ? selectedFile.replace("Cargo.toml", "")
+          : selectedFile;
+
         const terminal = vscode.window.createTerminal(`Publish Package`);
-        terminal.sendText(`cd ${packagePath} && resim publish .`);
+        terminal.sendText(`cd ${parentPath} && resim publish .`);
         terminal.show();
       } else {
-        const terminal = vscode.window.createTerminal(`Publish Package`);
-        terminal.sendText(`resim publish .`);
-        terminal.show();
+        // Prompt for the relative path to the package
+        const packagePath = await prompts.relativePackagePath();
+        if (packagePath) {
+          const terminal = vscode.window.createTerminal(`Publish Package`);
+          terminal.sendText(`cd ${packagePath} && resim publish .`);
+          terminal.show();
+        } else {
+          const terminal = vscode.window.createTerminal(`Publish Package`);
+          terminal.sendText(`resim publish .`);
+          terminal.show();
+        }
       }
+
       analytics.resim.event("resim_publish_package");
     }),
   );
@@ -266,276 +282,88 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("stokenet.deploy-package", async () => {
-      function isFileExtensionValid(
-        filePath: string,
-        extension: string,
-      ): boolean {
-        const fileExtension = filePath.slice(filePath.lastIndexOf("."));
-        return fileExtension === extension;
-      }
+    vscode.commands.registerCommand("stokenet.publish-package", async (ev) => {
+      const selectedFile = ev && ev.path ? (ev.path as string) : undefined;
 
-      async function getPayerAccount(): Promise<Account | undefined> {
-        return stokenetAccountsModule.pickAccount(
+      const proceedWithDeployment = async (
+        packageWasmPath: string,
+        packageRpdPath: string,
+      ) => {
+        const payerAccount = await stokenetAccountsModule.pickAccount(
           "Choose an account to pay for the deployment",
         );
+        vscode.window.showInformationMessage(
+          `Deploying package to stokenet from ${packageWasmPath}`,
+        );
+        return deployPackage(
+          payerAccount,
+          packageWasmPath,
+          packageRpdPath,
+        ).then((receipt) => handlePackageDeploymentResponse(receipt));
+      };
+
+      // Check if the command was triggered from the context menu
+      if (selectedFile) {
+        const isCargoToml = selectedFile.endsWith("Cargo.toml");
+        const foundWasmPath = isCargoToml
+          ? findWasmPath(selectedFile)
+          : undefined;
+        const analysedPath = foundWasmPath || selectedFile;
+
+        const selectedFileExtension = extname(analysedPath);
+        const selectedFileNoExtension = analysedPath.substr(
+          0,
+          analysedPath.lastIndexOf(selectedFileExtension),
+        );
+        const otherFileExtension =
+          selectedFileExtension === ".wasm" ? ".rpd" : ".wasm";
+
+        // Check if there's corresponding wasm/rpd file in the same directory
+        if (isFile(`${selectedFileNoExtension}${otherFileExtension}`)) {
+          const packageWasmPath = `${selectedFileNoExtension}.wasm`;
+          const packageRpdPath = `${selectedFileNoExtension}.rpd`;
+          return proceedWithDeployment(packageWasmPath, packageRpdPath);
+        } else {
+          vscode.window.showErrorMessage(
+            "There's no proper WASM and RPD files in `target` directory. Make sure you've build your project using `scrypto build`",
+          );
+          return;
+        }
       }
-      // Check the workspace context for the package path and propmpt to update or continue if it exists
+
+      const contextPackageWasmPath = context.workspaceState.get<
+        string | undefined
+      >("packageWasmPath");
+      const contextPackageRpdPath = context.workspaceState.get<
+        string | undefined
+      >("packageRpdPath");
+
       if (
-        !context.workspaceState.get("packageWasmPath") ||
-        !context.workspaceState.get("packageRpdPath")
+        isFileWithExtension(contextPackageWasmPath) &&
+        isFileWithExtension(contextPackageRpdPath)
       ) {
-        // prompt the user for the package path
+        return proceedWithDeployment(
+          contextPackageWasmPath,
+          contextPackageRpdPath,
+        );
+      }
 
-        const packageWasmPath = await prompts.wasmPath();
-        const packageRpdPath = await prompts.rpdPath();
-        const wasmPathisValid =
-          packageWasmPath &&
-          fs.existsSync(packageWasmPath) &&
-          fs.lstatSync(packageWasmPath).isFile() &&
-          isFileExtensionValid(packageWasmPath, ".wasm");
-        const rpdPathisValid =
-          packageRpdPath &&
-          fs.existsSync(packageRpdPath) &&
-          fs.lstatSync(packageRpdPath).isFile() &&
-          isFileExtensionValid(packageRpdPath, ".rpd");
-        if (!wasmPathisValid || !rpdPathisValid) {
-          // Path is invalid, display an error message
-          vscode.window.showErrorMessage(
-            "Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.",
-          );
-          // Prompt the user to enter the path again or clear the workspace context
-          const userChoice = await vscode.window.showQuickPick(
-            ["Clear Workspace Context", "Update Package Paths"],
-            { placeHolder: "Choose an option" },
-          );
-          if (userChoice === "Clear Workspace Context") {
-            context.workspaceState.update("packageWasmPath", undefined);
-            context.workspaceState.update("packageRpdPath", undefined);
-            return;
-          } else if (userChoice === "Update Package Paths") {
-            const packageWasmPath = await prompts.wasmPath();
-            const packageRpdPath = await prompts.rpdPath();
-            // check if the paths are valid
-            const wasmPathisValid =
-              packageWasmPath &&
-              fs.existsSync(packageWasmPath) &&
-              fs.lstatSync(packageWasmPath).isFile() &&
-              isFileExtensionValid(packageWasmPath, ".wasm");
-            const rpdPathisValid =
-              packageRpdPath &&
-              fs.existsSync(packageRpdPath) &&
-              fs.lstatSync(packageRpdPath).isFile() &&
-              isFileExtensionValid(packageRpdPath, ".rpd");
-            if (!wasmPathisValid || !rpdPathisValid) {
-              // Paths are invalid, display an error message
-              vscode.window.showErrorMessage(
-                "Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.",
-              );
-              return;
-            } else {
-              context.workspaceState.update("packageWasmPath", packageWasmPath);
-              context.workspaceState.update("packageRpdPath", packageRpdPath);
-              // prompt the user to choose an account to pay for the deployment
-              const payerAccount = await getPayerAccount();
-              vscode.window.showInformationMessage(
-                `Deploying package to stokenet from @path ${packageWasmPath}`,
-              );
-              // compose the deploy package transaction and send to gateway
-              deployPackage(payerAccount, packageWasmPath, packageRpdPath).then(
-                (receipt) => handlePackageDeploymentResponse(receipt),
-              );
-              return;
-            }
-          }
-        } else {
-          // If the paths are valid, update the workspace context
-          context.workspaceState.update("packageWasmPath", packageWasmPath);
-          context.workspaceState.update("packageRpdPath", packageRpdPath);
-          // prompt the user to choose an account to pay for the deployment
-          const payerAccount = await getPayerAccount();
-          vscode.window.showInformationMessage(
-            `Deploying package to stokenet from @path ${packageWasmPath}`,
-          );
-          // compose the deploy package transaction and send to gateway
-          deployPackage(payerAccount, packageWasmPath, packageRpdPath).then(
-            (receipt) => handlePackageDeploymentResponse(receipt),
-          );
-          return;
-        }
+      context.workspaceState.update("packageWasmPath", undefined);
+      context.workspaceState.update("packageRpdPath", undefined);
+
+      const packageWasmPath = await prompts.wasmPath();
+      const packageRpdPath = await prompts.rpdPath();
+      const isWasmFilePathValid = isFileWithExtension(packageWasmPath, ".wasm");
+      const isRpdFilePathValid = isFileWithExtension(packageRpdPath, ".rpd");
+
+      if (isRpdFilePathValid && isWasmFilePathValid) {
+        context.workspaceState.update("packageWasmPath", packageWasmPath);
+        context.workspaceState.update("packageRpdPath", packageRpdPath);
+        return proceedWithDeployment(packageWasmPath, packageRpdPath);
       } else {
-        // If the package path is already set, get it from the workspace context
-        const packageWasmPath =
-          context.workspaceState.get<string>("packageWasmPath");
-        const packageRpdPath =
-          context.workspaceState.get<string>("packageRpdPath");
-        // check if the path is valid if not display an error message
-        const wasmPathisValid =
-          packageWasmPath &&
-          fs.existsSync(packageWasmPath) &&
-          fs.lstatSync(packageWasmPath).isFile() &&
-          isFileExtensionValid(packageWasmPath, ".wasm");
-        const rpdPathisValid =
-          packageRpdPath &&
-          fs.existsSync(packageRpdPath) &&
-          fs.lstatSync(packageRpdPath).isFile() &&
-          isFileExtensionValid(packageRpdPath, ".rpd");
-        if (!wasmPathisValid || !rpdPathisValid) {
-          // Path is invalid, display an error message
-          vscode.window.showErrorMessage(
-            "Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.",
-          );
-          // Prompt the user to enter the path again or clear the workspace context
-          const userChoice = await vscode.window.showQuickPick(
-            ["Clear Workspace Context", "Update Package Paths"],
-            { placeHolder: "Choose an option" },
-          );
-          if (userChoice === "Clear Workspace Context") {
-            context.workspaceState.update("packageWasmPath", undefined);
-            context.workspaceState.update("packageRpdPath", undefined);
-            return;
-          } else if (userChoice === "Update Package Paths") {
-            const packageWasmPath = await prompts.wasmPath();
-            const packageRpdPath = await prompts.rpdPath();
-
-            // check if the paths are valid
-            const wasmPathisValid =
-              packageWasmPath &&
-              fs.existsSync(packageWasmPath) &&
-              fs.lstatSync(packageWasmPath).isFile() &&
-              isFileExtensionValid(packageWasmPath, ".wasm");
-            const rpdPathisValid =
-              packageRpdPath &&
-              fs.existsSync(packageRpdPath) &&
-              fs.lstatSync(packageRpdPath).isFile() &&
-              isFileExtensionValid(packageRpdPath, ".rpd");
-            if (!wasmPathisValid || !rpdPathisValid) {
-              // Paths are invalid, display an error message
-              vscode.window.showErrorMessage(
-                "Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.",
-              );
-              return;
-            } else {
-              context.workspaceState.update("packageWasmPath", packageWasmPath);
-              context.workspaceState.update("packageRpdPath", packageRpdPath);
-              // prompt the user to choose an account to pay for the deployment
-              const payerAccount = await getPayerAccount();
-              vscode.window.showInformationMessage(
-                `Deploying package to stokenet from @path ${packageWasmPath}`,
-              );
-              // compose the deploy package transaction and send to gateway
-              deployPackage(payerAccount, packageWasmPath, packageRpdPath).then(
-                (receipt) => handlePackageDeploymentResponse(receipt),
-              );
-              return;
-            }
-          }
-        } else {
-          // If the paths are valid prompt the user to update the package path or continue with the existing path
-          const updatePaths = await vscode.window.showQuickPick(
-            ["Update Paths", "Continue with Deployment"],
-            { placeHolder: "Choose an option" },
-          );
-          if (updatePaths === "Update Paths") {
-            const packageWasmPath = await prompts.wasmPath();
-            const packageRpdPath = await prompts.rpdPath();
-
-            // check if the paths are valid
-            const wasmPathisValid =
-              packageWasmPath &&
-              fs.existsSync(packageWasmPath) &&
-              fs.lstatSync(packageWasmPath).isFile() &&
-              isFileExtensionValid(packageWasmPath, ".wasm");
-            const rpdPathisValid =
-              packageRpdPath &&
-              fs.existsSync(packageRpdPath) &&
-              fs.lstatSync(packageRpdPath).isFile() &&
-              isFileExtensionValid(packageRpdPath, ".rpd");
-            if (!wasmPathisValid || !rpdPathisValid) {
-              // Path is invalid, display an error message
-              vscode.window.showErrorMessage(
-                "Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.",
-              );
-              // Prompt the user to enter the path again or clear the workspace context
-              const userChoice = await vscode.window.showQuickPick(
-                ["Clear Workspace Context", "Update Package Paths"],
-                { placeHolder: "Choose an option" },
-              );
-              if (userChoice === "Clear Workspace Context") {
-                context.workspaceState.update("packageWasmPath", undefined);
-                context.workspaceState.update("packageRpdPath", undefined);
-                return;
-              } else if (userChoice === "Update Package Paths") {
-                const packageWasmPath = await prompts.wasmPath();
-                const packageRpdPath = await prompts.rpdPath();
-
-                // check if the paths are valid
-                const wasmPathisValid =
-                  packageWasmPath &&
-                  fs.existsSync(packageWasmPath) &&
-                  fs.lstatSync(packageWasmPath).isFile() &&
-                  isFileExtensionValid(packageWasmPath, ".wasm");
-                const rpdPathisValid =
-                  packageRpdPath &&
-                  fs.existsSync(packageRpdPath) &&
-                  fs.lstatSync(packageRpdPath).isFile() &&
-                  isFileExtensionValid(packageRpdPath, ".rpd");
-                if (!wasmPathisValid || !rpdPathisValid) {
-                  // Paths are invalid, display an error message
-                  vscode.window.showErrorMessage(
-                    "Invalid package path. Please check the path and ensure you have built the package with the `scypto build` command.",
-                  );
-                  return;
-                } else {
-                  context.workspaceState.update(
-                    "packageWasmPath",
-                    packageWasmPath,
-                  );
-                  context.workspaceState.update(
-                    "packageRpdPath",
-                    packageRpdPath,
-                  );
-                  // TODO prompt the user to choose an account to pay for the deployment
-                  const payerAccount = await getPayerAccount();
-                  vscode.window.showInformationMessage(
-                    `Deploying package to stokenet from @path ${packageWasmPath}`,
-                  );
-                  // compose the deploy package transaction and send to gateway
-                  deployPackage(
-                    payerAccount,
-                    packageWasmPath,
-                    packageRpdPath,
-                  ).then((reciept) => handlePackageDeploymentResponse(reciept));
-                  return;
-                }
-              }
-            } else {
-              // If the paths are valid, update the workspace context
-              context.workspaceState.update("packageWasmPath", packageWasmPath);
-              context.workspaceState.update("packageRpdPath", packageRpdPath);
-              // TODO prompt the user to choose an account to pay for the deployment
-              const payerAccount = await getPayerAccount();
-              vscode.window.showInformationMessage(
-                `Deploying package to stokenet from @path ${packageWasmPath}`,
-              );
-              // compose the deploy package transaction and send to gateway
-              deployPackage(payerAccount, packageWasmPath, packageRpdPath).then(
-                (receipt) => handlePackageDeploymentResponse(receipt),
-              );
-              return;
-            }
-          }
-          // continue deployment with the existing paths
-          const payerAccount = await getPayerAccount();
-          vscode.window.showInformationMessage(
-            `Deploying package to stokenet from @path ${packageWasmPath}`,
-          );
-          // compose the deploy package transaction and send to gateway
-          deployPackage(payerAccount, packageWasmPath, packageRpdPath).then(
-            (receipt) => handlePackageDeploymentResponse(receipt),
-          );
-          return;
-        }
+        vscode.window.showErrorMessage(
+          "Invalid rpd/wasm paths. Please provide correct absolute paths to RPD and WASM files.",
+        );
       }
       analytics.stokenet.event("stokenet_deploy_package");
     }),
