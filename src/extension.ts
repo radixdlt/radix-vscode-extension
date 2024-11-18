@@ -50,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
   const stokenetCmd = [
     treeItem("New Account", "stokenet.new-account", account_icon),
     treeItem("Get XRD", "stokenet.faucet", transfer_icon),
-    treeItem("Deploy Package", "stokenet.deploy-package", publish_icon),
+    treeItem("Deploy Package", "stokenet.publish-package", publish_icon),
     treeItem("Open Dashboard", "stokenet.dashboard", dashboard_icon),
     treeItem("Open Dev Console", "stokenet.console", console_icon),
     treeItem(
@@ -270,7 +270,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("stokenet.deploy-package", async (ev) => {
+    vscode.commands.registerCommand("stokenet.publish-package", async (ev) => {
       const selectedFile = ev && ev.path ? (ev.path as string) : undefined;
 
       const proceedWithDeployment = async (

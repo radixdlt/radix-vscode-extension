@@ -32,7 +32,7 @@
         "title": "Submit to Stokenet"
       },
       {
-        "command": "stokenet.deploy-package",
+        "command": "stokenet.publish-package",
         "title": "Deploy to Stokenet"
       }
     ],
@@ -50,12 +50,12 @@
         },
         {
           "when": "resourceExtname == '.rpd'",
-          "command": "stokenet.deploy-package",
+          "command": "stokenet.publish-package",
           "group": "navigation"
         },
         {
           "when": "resourceExtname == '.wasm'",
-          "command": "stokenet.deploy-package",
+          "command": "stokenet.publish-package",
           "group": "navigation"
         }
       ]
