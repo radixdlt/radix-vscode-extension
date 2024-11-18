@@ -66,6 +66,11 @@
           "when": "resourceFilename == 'Cargo.toml'",
           "command": "stokenet.publish-package",
           "group": "navigation"
+        },
+        {
+          "when": "resourceFilename == 'Cargo.toml'",
+          "command": "resim.publish",
+          "group": "navigation"
         }
       ]
     },

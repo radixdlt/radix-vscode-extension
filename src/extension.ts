@@ -139,18 +139,31 @@ export function activate(context: vscode.ExtensionContext) {
   // Resim Publish Package Command
   // TODO - add a check to see if the terminal location contains the scrypto-package
   context.subscriptions.push(
-    vscode.commands.registerCommand("resim.publish", async () => {
-      // Prompt for the relative path to the package
-      const packagePath = await prompts.relativePackagePath();
-      if (packagePath) {
+    vscode.commands.registerCommand("resim.publish", async (ev) => {
+      const selectedFile = ev && ev.path ? (ev.path as string) : undefined;
+      if (selectedFile) {
+        const isCargoToml = selectedFile.endsWith("Cargo.toml");
+        const parentPath = isCargoToml
+          ? selectedFile.replace("Cargo.toml", "")
+          : selectedFile;
+
         const terminal = vscode.window.createTerminal(`Publish Package`);
-        terminal.sendText(`cd ${packagePath} && resim publish .`);
+        terminal.sendText(`cd ${parentPath} && resim publish .`);
         terminal.show();
       } else {
-        const terminal = vscode.window.createTerminal(`Publish Package`);
-        terminal.sendText(`resim publish .`);
-        terminal.show();
+        // Prompt for the relative path to the package
+        const packagePath = await prompts.relativePackagePath();
+        if (packagePath) {
+          const terminal = vscode.window.createTerminal(`Publish Package`);
+          terminal.sendText(`cd ${packagePath} && resim publish .`);
+          terminal.show();
+        } else {
+          const terminal = vscode.window.createTerminal(`Publish Package`);
+          terminal.sendText(`resim publish .`);
+          terminal.show();
+        }
       }
+
       analytics.resim.event("resim_publish_package");
     }),
   );
@@ -292,7 +305,9 @@ export function activate(context: vscode.ExtensionContext) {
       // Check if the command was triggered from the context menu
       if (selectedFile) {
         const isCargoToml = selectedFile.endsWith("Cargo.toml");
-        const foundWasmPath = isCargoToml ? findWasmPath(selectedFile) : undefined;
+        const foundWasmPath = isCargoToml
+          ? findWasmPath(selectedFile)
+          : undefined;
         const analysedPath = foundWasmPath || selectedFile;
 
         const selectedFileExtension = extname(analysedPath);
