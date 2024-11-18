@@ -32,8 +32,12 @@
         "title": "Submit to Stokenet"
       },
       {
+        "command": "resim.publish",
+        "title": "Publish to Resim"
+      },
+      {
         "command": "stokenet.publish-package",
-        "title": "Deploy to Stokenet"
+        "title": "Publish to Stokenet"
       }
     ],
     "menus": {
@@ -55,6 +59,11 @@
         },
         {
           "when": "resourceExtname == '.wasm'",
+          "command": "stokenet.publish-package",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceFilename == 'Cargo.toml'",
           "command": "stokenet.publish-package",
           "group": "navigation"
         }

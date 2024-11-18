@@ -7,7 +7,6 @@ import {
   deployPackage,
   handlePackageDeploymentResponse,
 } from "./helpers/deploy-package";
-import * as fs from "fs";
 import { AnalyticsModule } from "./modules/analytics-module";
 import { ScryptoTreeDataProvider } from "./helpers/scrypto-tree-data-provider";
 import { getStokenetAccountWebView } from "./webviews/stokenet-account";
@@ -18,10 +17,10 @@ import {
 } from "./modules/stokenet-accounts-module";
 import { ResimModule } from "./modules/resim-module";
 import { treeItem } from "./helpers/tree-item";
-import { hasExtension } from "./helpers/has-extension";
 import { extname } from "path";
 import { isFile } from "./helpers/is-file";
 import { isFileWithExtension } from "./helpers/is-file-with-extension";
+import { findWasmPath } from "./helpers/find-wasm";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -292,10 +291,14 @@ export function activate(context: vscode.ExtensionContext) {
 
       // Check if the command was triggered from the context menu
       if (selectedFile) {
-        const selectedFileExtension = extname(selectedFile);
-        const selectedFileNoExtension = selectedFile.substr(
+        const isCargoToml = selectedFile.endsWith("Cargo.toml");
+        const foundWasmPath = isCargoToml ? findWasmPath(selectedFile) : undefined;
+        const analysedPath = foundWasmPath || selectedFile;
+
+        const selectedFileExtension = extname(analysedPath);
+        const selectedFileNoExtension = analysedPath.substr(
           0,
-          selectedFile.lastIndexOf(selectedFileExtension),
+          analysedPath.lastIndexOf(selectedFileExtension),
         );
         const otherFileExtension =
           selectedFileExtension === ".wasm" ? ".rpd" : ".wasm";
@@ -307,7 +310,7 @@ export function activate(context: vscode.ExtensionContext) {
           return proceedWithDeployment(packageWasmPath, packageRpdPath);
         } else {
           vscode.window.showErrorMessage(
-            "There's no corresponding wasm/rpd file in the same directory",
+            "There's no proper WASM and RPD files in `target` directory. Make sure you've build your project using `scrypto build`",
           );
         }
       }
