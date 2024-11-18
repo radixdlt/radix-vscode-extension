@@ -327,6 +327,7 @@ export function activate(context: vscode.ExtensionContext) {
           vscode.window.showErrorMessage(
             "There's no proper WASM and RPD files in `target` directory. Make sure you've build your project using `scrypto build`",
           );
+          return;
         }
       }
 
