@@ -39,7 +39,7 @@ jobs:
           name: radix-vs-code-extension-pr-${{ github.event.pull_request.number }}
           path: dist/  
   build-pre-release:
-    name: Build and Upload Dev Artifact
+    name: Build and create Prerelease
     runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/main'
 
@@ -58,12 +58,16 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Archive Build
+        run: |
+          mkdir -p artifacts
+          zip -r artifacts/radix-vs-code-${{ env.VERSION }}.zip dist/      
       - name: Create Pre-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG_NAME=radix-vs-code-${{ env.VERSION }}
-          gh release create "$TAG_NAME" dist/* --prerelease --title "Pre-release $TAG_NAME" --notes "Automated pre-release build."
+          TAG_NAME=v${{ env.VERSION }}
+          gh release create "$TAG_NAME" artifacts/radix-vs-code-${{ env.VERSION }}.zip --prerelease --title "$TAG_NAME" --notes "Automated pre-release build."
   upload-to-vscode-market:
     name: Build and Publish Release
     runs-on: ubuntu-22.04
