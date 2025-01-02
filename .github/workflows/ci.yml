@@ -65,23 +65,23 @@ jobs:
           TAG_NAME=radix-vs-code-${{ env.VERSION }}
           gh release create "$TAG_NAME" dist/* --prerelease --title "Pre-release $TAG_NAME" --notes "Automated pre-release build."
 
-    publish-release:
-      name: Build and Publish Release
-      runs-on: ubuntu-latest
-      if: github.event_name == 'release' && github.event.action == 'created'
-      steps:
-      - uses: RDXWorks-actions/checkout@main
-      - name: Setup Node.js
-        uses: RDXWorks-actions/setup-node@main
-        with:
-          node-version: '18.x'
-      - name: Install Dependencies
-        run: npm ci
-      - name: Build the Application
-        run: npm run package
-      - name: Publish to VSCode Marketplace
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: |
-          npm install -g @vscode/vsce
-          vsce publish
+  publish-release:
+    name: Build and Publish Release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'created'
+    steps:
+    - uses: RDXWorks-actions/checkout@main
+    - name: Setup Node.js
+      uses: RDXWorks-actions/setup-node@main
+      with:
+        node-version: '18.x'
+    - name: Install Dependencies
+      run: npm ci
+    - name: Build the Application
+      run: npm run package
+    - name: Publish to VSCode Marketplace
+      env:
+        VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      run: |
+        npm install -g @vscode/vsce
+        vsce publish
