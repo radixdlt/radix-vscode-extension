@@ -10,6 +10,7 @@ on:
   push:
     branches:
       - main
+      - DO-2780
 
 permissions:
   contents: write   # For checking out and building
@@ -41,7 +42,7 @@ jobs:
   build-pre-release:
     name: Build and Upload Dev Artifact
     runs-on: ubuntu-22.04
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/DO-2780'
 
     steps:
       - uses: RDXWorks-actions/checkout@main
