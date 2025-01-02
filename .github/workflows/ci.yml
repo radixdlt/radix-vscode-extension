@@ -1,0 +1,87 @@
+name: Build and Publish VScode extension
+
+on:
+  release:
+    types:
+      - released
+  pull-request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write   # For checking out and building
+  packages: write   # For creating pre-releases and publishing packages
+  actions: read     # For using workflow actions
+  
+jobs:
+  build-pr:
+    name: Build and Upload PR Artifact
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: RDXWorks-actions/checkout@main
+      - name: Setup Node.js
+        uses: RDXWorks-actions/setup-node@main
+        with:
+          node-version: '18.x'
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build the Application
+        run: npm run package
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: radix-vs-code-extension-pr-${{ github.event.pull_request.number }}
+          path: dist/  
+  build-pre-release:
+    name: Build and Upload Dev Artifact
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: RDXWorks-actions/checkout@main
+      - name: Setup Node.js
+        uses: RDXWorks-actions/setup-node@main
+        with:
+          node-version: '18.x'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build the Application
+        run: npm run package
+      - name: Extract Version from package.json
+        id: get_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create Pre-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME=radix-vs-code-${{ env.VERSION }}
+          gh release create "$TAG_NAME" dist/* --prerelease --title "Pre-release $TAG_NAME" --notes "Automated pre-release build."
+
+    publish-release:
+      name: Build and Publish Release
+      runs-on: ubuntu-latest
+      if: github.event_name == 'release' && github.event.action == 'created'
+
+      steps:
+      - uses: RDXWorks-actions/checkout@main
+      - name: Setup Node.js
+        uses: RDXWorks-actions/setup-node@main
+        with:
+          node-version: '18.x'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build the Application
+        run: npm run package
+      - name: Publish to VSCode Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }} # Ensure this secret is added to your repository
+        run: |
+          npm install -g @vscode/vsce
+          vsce publish
