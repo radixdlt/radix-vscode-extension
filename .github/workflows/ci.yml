@@ -10,7 +10,6 @@ on:
   push:
     branches:
       - main
-      - DO-2780
 
 permissions:
   contents: write   # For checking out and building
@@ -42,7 +41,7 @@ jobs:
   build-pre-release:
     name: Build and create Prerelease
     runs-on: ubuntu-22.04
-    if: github.ref == 'refs/heads/DO-2780'
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - uses: RDXWorks-actions/checkout@main
