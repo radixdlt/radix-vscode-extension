@@ -16,8 +16,8 @@ export type Analytics = Record<
  */
 export const AnalyticsModule = (
   {
-     measurement_id,
-     api_secret,
+    measurement_id,
+    api_secret,
     vscode,
   }: {
     measurement_id: string;
@@ -26,8 +26,8 @@ export const AnalyticsModule = (
   } = {
     // Google Analytics Measurement ID and API Secret
     // *Note* this is just the identifier for the GA4 Property & Stream
-     measurement_id: "G-P4R93X3GNW",
-     api_secret: "",
+    measurement_id: "G-P4R93X3GNW",
+    api_secret: "",
     vscode: code.env,
   },
 ) => {
