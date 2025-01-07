@@ -27,7 +27,7 @@ export const AnalyticsModule = (
     // Google Analytics Measurement ID and API Secret
     // *Note* this is just the identifier for the GA4 Property & Stream
     measurement_id: "G-P4R93X3GNW",
-    api_secret: "c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9",
+    api_secret: "",
     vscode: code.env,
   },
 ) => {
@@ -37,7 +37,7 @@ export const AnalyticsModule = (
         event: (name: string, value?: string) => {
           if (vscode.isTelemetryEnabled) {
             fetch(
-              `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`,
+              `https://google-analytics-proxy.radixdlt.com/mp/collect?measurement_id=${measurement_id}`,
               {
                 method: "POST",
                 body: JSON.stringify({
