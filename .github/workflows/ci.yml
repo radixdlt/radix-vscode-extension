@@ -72,7 +72,7 @@ jobs:
   upload-to-vscode-market:
     name: Build and Publish Release
     runs-on: ubuntu-22.04
-    if: github.event_name == 'release' && github.event.action == 'created'
+    if: github.event_name == 'release' && github.event.action == 'published'
     steps:
     - uses: RDXWorks-actions/checkout@main
     - name: Setup Node.js
