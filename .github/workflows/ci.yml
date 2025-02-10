@@ -35,7 +35,7 @@ jobs:
         run: npm run package
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: RDXWorks-actions/upload-artifact@main
         with:
           name: radix-vs-code-extension-pr-${{ github.event.pull_request.number }}
           path: dist/  
